@@ -89,7 +89,7 @@ class myObject{
         GL.vertexAttribPointer(this._position,3,GL.FLOAT,false,4*(3+3), 0);
         GL.vertexAttribPointer(this._color,3,GL.FLOAT,false,4*(3+3), 3*4);
         GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.OBJECT_FACES);
-        GL.drawElements(GL.TRIANGLES,36, GL.UNSIGNED_SHORT,0);
+        GL.drawElements(GL.TRIANGLES,55, GL.UNSIGNED_SHORT,0);
 
         for(var i =0;i <this.child.length;i++){
             this.child[i].draw();
