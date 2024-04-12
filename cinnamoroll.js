@@ -89,7 +89,7 @@ class myObject{
         GL.vertexAttribPointer(this._position,3,GL.FLOAT,false,4*(3+3), 0);
         GL.vertexAttribPointer(this._color,3,GL.FLOAT,false,4*(3+3), 3*4);
         GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.OBJECT_FACES);
-        GL.drawElements(GL.TRIANGLES,36, GL.UNSIGNED_SHORT,0);
+        GL.drawElements(GL.TRIANGLES,this.object_faces.length, GL.UNSIGNED_SHORT,0);
 
         for(var i =0;i <this.child.length;i++){
             this.child[i].draw();
@@ -184,39 +184,39 @@ function main(){
         gl_FragColor = vec4(vColor, 1.0);
     }`;
 
-    // TRIANGLE
+    // KEPALA 
     var object_vertex = [];
     var i,j;
 	i=0;
-	for(var u=-Math.PI;u<=Math.PI;u+=Math.PI/30)
+	for(var u=-Math.PI;u<=Math.PI;u+=Math.PI/160)
 	{	j=0;
-		for(var v=-Math.PI/2;v<Math.PI/2;v+=Math.PI/30)
-		{	object_vertex.push(2*Math.cos(v)* Math.cos(u));
+		for(var v=-Math.PI/2;v<Math.PI/2;v+=Math.PI/160)
+		{	object_vertex.push(1*Math.cos(v)* Math.cos(u));
 			object_vertex.push(1 *Math.cos(v)* Math.sin(u));
 			object_vertex.push(1 * Math.sin(v));
-            object_vertex.push(0);
-            object_vertex.push(0);
-            object_vertex.push(0);
+            object_vertex.push(1);
+            object_vertex.push(1);
+            object_vertex.push(1);
 			j++;
 		}
 		i++;
 	};
     var object_faces = [];
     for (i = 0 ; i <= object_vertex.length ; i++){
+        object_faces.push(0);
         object_faces.push(i);
+        object_faces.push(i+1);
+
     };
 
     var object1 = new myObject(object_vertex,object_faces,shader_vertex_source,shader_fragment_source);
-    var object2 = new myObject(object_vertex,object_faces,shader_vertex_source,shader_fragment_source);
-
-    object1.addChild(object2); // tambahin objek anakannya 
     
     //MATRIX
     var PROJMATRIX = LIBS.get_projection(40, CANVAS.width/CANVAS.height,1, 100);
 
     var VIEWMATRIX = LIBS.get_I4();
 
-    LIBS.translateZ(VIEWMATRIX, -5); //untuk mundurin camera dan camera tidak menabrak dengan objeknya
+    LIBS.translateZ(VIEWMATRIX, -7); //untuk mundurin camera dan camera tidak menabrak dengan objeknya
 
     GL.clearColor(0.0, 0.0, 0.0, 0.0); //R, G, B, Opacity
 
@@ -267,8 +267,6 @@ function main(){
         object1.setUniform4(PROJMATRIX,VIEWMATRIX);
         object1.draw();
 
-        object1.child[0].setUniform4(PROJMATRIX,VIEWMATRIX);
-        object1.draw();
         // object2.setUniform4(PROJMATRIX,VIEWMATRIX);
         // object2.draw();
 
