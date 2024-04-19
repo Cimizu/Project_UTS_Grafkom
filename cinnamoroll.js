@@ -102,7 +102,258 @@ class myObject{
         // tiap kali rotate juga anaknya draw anaknya juga
     }
 
+};
+
+function Sphere(rad,sector,a,b,c, red,green,blue ){
+    var object = [];
+    var x, y, z, xy;                              // vertex position
+    var nx, ny, nz
+    var radius = rad;
+    var lengthInv = 1.0 / radius;                 // vertex normal
+    var s, t;                                     // vertex texCoord
+
+    var sectorCount = 30;
+    var stackCount = 30;
+    var sectorStep = sector * Math.PI / sectorCount;
+    var stackStep = Math.PI / stackCount;
+    var sectorAngle, stackAngle;
+
+for(var i = 0; i <= stackCount; ++i)
+{
+    stackAngle = Math.PI / 2 - i * stackStep;        // starting from pi/2 to -pi/2
+    xy = radius * Math.cos(stackAngle);             // r * cos(u)
+    z = a * radius * Math.sin(stackAngle);              // r * sin(u)
+
+    // add (sectorCount+1) vertices per stack
+    // first and last vertices have same position and normal, but different tex coords
+    for(var j = 0; j <= sectorCount; ++j)
+    {
+        sectorAngle = j * sectorStep;           // starting from 0 to 2pi
+
+        // vertex position (x, y, z)
+        x = c * xy * Math.cos(sectorAngle);             // r * cos(u) * cos(v)
+        y =  b * xy * Math.sin(sectorAngle);             // r * cos(u) * sin(v)
+        object.push(x);
+        object.push(y);
+        object.push(z);
+        object.push(red);
+        object.push(green);
+        object.push(blue);
+    }
+};
+    
+    var objectface = [];
+
+    var k1, k2;
+for(var i = 0; i < stackCount; ++i)
+{
+    k1 = i * (sectorCount + 1);     // beginning of current stack
+    k2 = k1 + sectorCount + 1;      // beginning of next stack
+// jika dibagi 2 maka akan dilakukan sectorcount/2
+    for(var j = 0; j < sectorCount; ++j, ++k1, ++k2)
+    {
+        // 2 triangles per sector excluding first and last stacks
+        // k1 => k2 => k1+1
+        if(i != 0)
+        {
+            objectface.push(k1);
+            objectface.push(k2);
+            objectface.push(k1 + 1);
+        }
+
+        // k1+1 => k2 => k2+1
+        if(i != (stackCount-1))
+        {
+            objectface.push(k1 + 1);
+            objectface.push(k2);
+            objectface.push(k2 + 1);
+        }
+
+        // store indices for lines
+        // vertical lines for all stacks, k1 => k2
+        // lineIndices.push_back(k1);
+        // lineIndices.push_back(k2);
+        // if(i != 0)  // horizontal lines except 1st stack, k1 => k+1
+        // {
+        //     triangle_faces.push(k1);
+        //     triangle_faces.push(k1 + 1);
+        // }
+    }
+};
+
+return {object,objectface};
+};
+
+
+function ellipticparaloid(a,b,c,red,green,blue){
+    var object = [];
+    var i,j;
+	i=0;
+	for(var u=-Math.PI;u<=Math.PI;u+=Math.PI/180)
+	{	j=0;
+		for(var v=-Math.PI/2;v<Math.PI/2;v+=Math.PI/180)
+		{	object.push(a * (v)* Math.cos(u));
+			object.push(b * (v)* Math.sin(u));
+			object.push(c* v * v);
+            object.push(red);
+            object.push(green);
+            object.push(blue);
+			j++;
+		}
+		i++;
+	};
+    var objectface = [];
+    for (i = 0 ; i <= object.length ; i++){
+        objectface.push(0);
+        objectface.push(i+1);
+        objectface.push(i);
+    };
+    return {object,objectface};
+
+};
+
+function kerucut (red,green,blue){
+var circle_vertex = [];
+   var jumlah = 360;
+   for (var i = 0 ; i <= jumlah ; i++){
+       circle_vertex.push(0.5 * Math.cos(i * Math.PI/180));
+       circle_vertex.push(0.5 * Math.sin(i * Math.PI/180));
+       circle_vertex.push(0);
+       circle_vertex.push(0);
+       circle_vertex.push(1);
+       circle_vertex.push(1);
+   };
+
+   //Titik tengah
+   circle_vertex.push(0);
+   circle_vertex.push(0);
+   circle_vertex.push(-1);
+   circle_vertex.push(red);
+   circle_vertex.push(green);
+   circle_vertex.push(blue);
+
+
+    var circle_faces = [];
+    var jumlah2 = 360;
+    //Buat Alas
+    for (var i = 0 ; i <= jumlah2 ; i++){
+        circle_faces.push(i);
+        circle_faces.push(i + 1);
+        circle_faces.push(0);
+    };
+
+    //Buat Sisinya
+    for (var i = 0 ; i <= jumlah2 ; i++){
+        circle_faces.push(i);
+        circle_faces.push(i + 1);
+        circle_faces.push(361);
+    };
+    return{circle_faces,circle_vertex};
+};
+
+function tabung(){
+    var circle_vertex = [];
+var jumlah = 360;
+var colors = []; // Array buat kumpulin  random colors
+
+for (var i = 0; i <= jumlah; i++) {
+    circle_vertex.push(0.5 * Math.cos(i * Math.PI / 180));
+    circle_vertex.push(0.5 * Math.sin(i * Math.PI / 180));
+    circle_vertex.push(0);
+
+    // mengenerate random color sekali setiap 60 vertice
+    if (i % 60 == 0) {
+        colors = [
+            Math.random() * 255 / 255,
+            Math.random() * 255 / 255,
+            Math.random() * 255 / 255
+        ];
+    }
+
+    // di dlm index 60 kalau ga sampe 0 ya belum ganti warna msh sama terus 
+    circle_vertex.push(colors[0]);
+    circle_vertex.push(colors[1]);
+    circle_vertex.push(colors[2]);
 }
+
+// LINGKARAN BAWAH 
+for (var i = 0; i <= jumlah; i++) {
+    circle_vertex.push(0.5 * Math.cos(i * Math.PI / 180));
+    circle_vertex.push(0.5 * Math.sin(i * Math.PI / 180));
+    circle_vertex.push(-2);
+
+    
+    if (i % 60 == 0) {
+        colors = [
+            Math.random() * 255 / 255,
+            Math.random() * 255 / 255,
+            Math.random() * 255 / 255
+        ];
+    }
+
+    circle_vertex.push(colors[0]);
+    circle_vertex.push(colors[1]);
+    circle_vertex.push(colors[2]);
+}
+
+
+
+var warna2 = [
+    Math.random() * 255 / 255,
+    Math.random() * 255 / 255,
+    Math.random() * 255 / 255
+];
+
+// untuk titik ditengah atas 
+circle_vertex.push(0);
+circle_vertex.push(0);
+circle_vertex.push(0);
+
+circle_vertex.push(warna2[0]);
+circle_vertex.push(warna2[1]);
+circle_vertex.push(warna2[2]);
+
+// untuk titik ditengah bawah
+circle_vertex.push(0);
+circle_vertex.push(0);
+circle_vertex.push(-2);
+
+circle_vertex.push(warna2[0]);
+circle_vertex.push(warna2[1]);
+circle_vertex.push(warna2[2]);
+
+
+// faces
+var circle_faces = [];
+var jumlah2 = 360;
+// LINGKARAN DIGAMBAR
+for (var i = 0 ; i <= jumlah2 ; i++){
+    circle_faces.push(i); 
+    circle_faces.push(i+1);
+    circle_faces.push(722);
+    
+};
+console.log(circle_vertex.length);
+// ALAS ATAS HUHUUHUHH
+for (var i = 361 ; i <= 721 ; i++){
+    circle_faces.push(i);
+    circle_faces.push(i+1);
+    circle_faces.push(723);
+};
+// LOOP 2 SEGITIGA 
+for (var i = 0 ; i <= jumlah2 ; i++){
+    circle_faces.push(i);
+    circle_faces.push(i + 361);
+    circle_faces.push(i+1);
+    circle_faces.push(362+i);
+    circle_faces.push(i + 361);
+    circle_faces.push(i+1);
+    
+};
+
+
+};
+
 function main(){
     var CANVAS = document.getElementById("mycanvas");
 
@@ -184,32 +435,52 @@ function main(){
         gl_FragColor = vec4(vColor, 1.0);
     }`;
 
-    // KEPALA 
-    var object_vertex = [];
-    var i,j;
-	i=0;
-	for(var u=-Math.PI;u<=Math.PI;u+=Math.PI/160)
-	{	j=0;
-		for(var v=-Math.PI/2;v<Math.PI/2;v+=Math.PI/160)
-		{	object_vertex.push(1*Math.cos(v)* Math.cos(u));
-			object_vertex.push(1 *Math.cos(v)* Math.sin(u));
-			object_vertex.push(1 * Math.sin(v));
-            object_vertex.push(1);
-            object_vertex.push(1);
-            object_vertex.push(1);
-			j++;
-		}
-		i++;
-	};
-    var object_faces = [];
-    for (i = 0 ; i <= object_vertex.length ; i++){
-        object_faces.push(0);
-        object_faces.push(i);
-        object_faces.push(i+1);
+    // BAGIAN KEPALA
+    //  Sphere(rad,sector,a,b,c, red,green,blue )
+    var kepalaAtas = Sphere(1.6, 1, 0.6, 0.86, 1, 1, 1, 1);
+    var kepalaBawah = Sphere(0.8, 2,1.2,1,2,1,1,1);
 
-    };
+    // BAGIAN MATA
+    var mataKiri = Sphere(0.08,2,1.5,2,1,15/255,143/255,212/255);
+    var mataKanan = Sphere(0.08,2,1.5,2,1,15/255,143/255,212/255);
 
-    var object1 = new myObject(object_vertex,object_faces,shader_vertex_source,shader_fragment_source);
+    // BAGIAN MULUT 
+    
+
+    // BAGIAN BADAN
+    var badan = Sphere(0.8,2,1,1,1.25,1,1,1);
+
+    // BAGIAN TANGAN
+    var tanganKiri = Sphere();
+    var tanganKanan = Sphere();
+    // BAGIAN TOPI
+
+    var topi = kerucut(1,1,1);
+
+    // BAGIAN SAYAP
+
+
+    // BAGIAN SAPU 
+    // tabung
+
+
+    // BAGIAN EKOR
+
+
+    
+
+    var object1 = new myObject(kepalaBawah.object,kepalaBawah.objectface,shader_vertex_source,shader_fragment_source);
+    var object2 = new myObject(kepalaAtas.object,kepalaAtas.objectface,shader_vertex_source,shader_fragment_source);
+    var object3 = new myObject(mataKiri.object,mataKiri.objectface,shader_vertex_source,shader_fragment_source);
+    var object4 = new myObject(mataKanan.object,mataKanan.objectface,shader_vertex_source,shader_fragment_source);
+    var object5 = new myObject(badan.object,badan.objectface,shader_vertex_source,shader_fragment_source);
+    var object6 = new myObject(topi.circle_vertex,topi.circle_faces,shader_vertex_source,shader_fragment_source);
+    object1.addChild(object2);
+    object1.addChild(object3);
+    object1.addChild(object4);
+    object1.addChild(object5);
+    
+    
     
     //MATRIX
     var PROJMATRIX = LIBS.get_projection(40, CANVAS.width/CANVAS.height,1, 100);
@@ -243,35 +514,44 @@ function main(){
                 PHI+=dY;
 
             }
-            LIBS.set_I4(object1.MOVEMATRIX);
-
-            // harus urut z ,y,x agar muternya benar 
-            // LIBS.rotateY(object1.MOVEMATRIX, THETA);
-            // LIBS.rotateX(object1.MOVEMATRIX, PHI);
-            temp = LIBS.get_I4();
-            LIBS.translateX(temp,1);
-            object1.MOVEMATRIX= LIBS.mul(object1.MOVEMATRIX,temp);
-            temp = LIBS.get_I4();
-            LIBS.rotateY(temp,THETA);
-            object1.MOVEMATRIX =LIBS.mul(object1.MOVEMATRIX,temp);
-            temp = LIBS.get_I4();
-            LIBS.translateX(temp,-1);
-            object1.MOVEMATRIX =LIBS.mul(object1.MOVEMATRIX,temp);
             
-            //console.log(dt); --> untuk menampilkan waktunya di console lewat inspect
+            // harus urut z ,y,x agar muternya benar  
+            // ini buat bs muterin objectnya kyk bumi mengelilingi matahari 
+
+
+            // matrix posisi , matrix rotasi 
+
+
+            // ini buat posisi
+            object1.MOVEMATRIX = glMatrix.mat4.create();
+            // glMatrix.mat4.(object1.MOVEMATRIX,object1.MOVEMATRIX,);
+            glMatrix.mat4.translate(object1.MOVEMATRIX,object1.MOVEMATRIX, [0.0,0.0,0.0]);
+            object2.MOVEMATRIX = glMatrix.mat4.create();
+            glMatrix.mat4.translate(object2.MOVEMATRIX,object2.MOVEMATRIX, [0.0,0.0,0.0]);
+            object3.MOVEMATRIX = glMatrix.mat4.create();
+            glMatrix.mat4.translate(object3.MOVEMATRIX,object3.MOVEMATRIX, [-0.6,0.1,2.0]);
+            object4.MOVEMATRIX = glMatrix.mat4.create();
+            glMatrix.mat4.translate(object4.MOVEMATRIX,object4.MOVEMATRIX, [0.6,0.1,2.0]);
+            object5.MOVEMATRIX = glMatrix.mat4.create();
+            glMatrix.mat4.translate(object5.MOVEMATRIX,object5.MOVEMATRIX, [0.0,-1.0,0.0]);
+            
+           // glMatrix.mat4.fromRotationTranslationScaleOrigin(object1.MOVEMATRIX,);
+            
+          //  console.log(dt); --> untuk menampilkan waktunya di console lewat inspect
             time_prev = time;
         }
 
         GL.viewport(0,0,CANVAS.width, CANVAS.height);
         GL.clear(GL.COLOR_BUFFER_BIT | GL.D_BUFFER_BIT);
         object1.setUniform4(PROJMATRIX,VIEWMATRIX);
+        object1.child[0].setUniform4(PROJMATRIX,VIEWMATRIX);
+        object1.child[1].setUniform4(PROJMATRIX,VIEWMATRIX);
+        object1.child[2].setUniform4(PROJMATRIX,VIEWMATRIX);
+        object1.child[3].setUniform4(PROJMATRIX,VIEWMATRIX);
         object1.draw();
 
         // object2.setUniform4(PROJMATRIX,VIEWMATRIX);
         // object2.draw();
-
-
-       
 
         //DRAWING
         //SEGITIGA yg pointer untuk tau posisi data dr yang -1,-1, dll gt.. 1 nya 4 bit (position 2 , color 3), trus startnya dr 0
