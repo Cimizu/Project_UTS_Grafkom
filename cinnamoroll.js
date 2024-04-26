@@ -104,9 +104,15 @@ class myObject{
         this.child.push(child);
         // tiap kali rotate juga anaknya draw anaknya juga
     }
-    rotate (){
-
+    rotate (THETA,PHI,R){
+        glMatrix.mat4.rotateZ(this.MOVEMATRIX, this.MOVEMATRIX,R );
+        glMatrix.mat4.rotateY(this.MOVEMATRIX, this.MOVEMATRIX, THETA);
+        glMatrix.mat4.rotateX(this.MOVEMATRIX, this.MOVEMATRIX, PHI);
+        this.child.forEach(element => {
+            element.rotate(THETA,PHI,R)
+        });
     };
+
 
 };
 
@@ -668,10 +674,10 @@ function main(){
             glMatrix.mat4.translate(object1.child[11].MOVEMATRIX,object1.child[11].MOVEMATRIX, [0.0,1.2,0.0]);
             glMatrix.mat4.rotateX(object1.child[11].MOVEMATRIX, object1.child[11].MOVEMATRIX, LIBS.degToRad(-90));
 
-            glMatrix.mat4.rotateY(object1.child[11].MOVEMATRIX, object1.child[11].MOVEMATRIX, THETA);
-            glMatrix.mat4.rotateX(object1.child[11].MOVEMATRIX, object1.child[11].MOVEMATRIX, PHI);
+            // glMatrix.mat4.rotateY(object1.child[11].MOVEMATRIX, object1.child[11].MOVEMATRIX, THETA);
+            // glMatrix.mat4.rotateX(object1.child[11].MOVEMATRIX, object1.child[11].MOVEMATRIX, PHI);
 
-
+            object1.rotate(THETA,PHI,0);
             
             
             // let rot = glMatrix.quat.fromEuler(glMatrix.quat.create(), PHI, THETA, 0);
