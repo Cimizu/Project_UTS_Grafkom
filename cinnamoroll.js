@@ -1,5 +1,79 @@
+
 // biar jd variable global
 var GL;
+function normalizeScreen(x, y, width, height) {
+    var nx = (2 * x) / width - 1;
+    var ny = (-2 * y) / height + 1;
+  
+    return [nx, ny];
+  }
+  
+  function generateBSpline(controlPoint, m, degree, zValues) {
+    var curves = [];
+    var knotVector = [];
+  
+    var n = controlPoint.length / 2;
+  
+    // Calculate the knot values based on the degree and number of control points
+    for (var i = 0; i < n + degree + 1; i++) {
+      if (i < degree + 1) {
+        knotVector.push(0);
+      } else if (i >= n) {
+        knotVector.push(n - degree);
+      } else {
+        knotVector.push(i - degree);
+      }
+    }
+  
+    var basisFunc = function (i, j, t) {
+      if (j == 0) {
+        if (knotVector[i] <= t && t < knotVector[i + 1]) {
+          return 1;
+        } else {
+          return 0;
+        }
+      }
+  
+      var den1 = knotVector[i + j] - knotVector[i];
+      var den2 = knotVector[i + j + 1] - knotVector[i + 1];
+  
+      var term1 = 0;
+      var term2 = 0;
+  
+      if (den1 != 0 && !isNaN(den1)) {
+        term1 = ((t - knotVector[i]) / den1) * basisFunc(i, j - 1, t);
+      }
+  
+      if (den2 != 0 && !isNaN(den2)) {
+        term2 = ((knotVector[i + j + 1] - t) / den2) * basisFunc(i + 1, j - 1, t);
+      }
+  
+      return term1 + term2;
+    };
+  
+    for (var t = 0; t < m; t++) {
+      var x = 0;
+      var y = 0;
+  
+      var u =
+        (t / m) * (knotVector[controlPoint.length / 2] - knotVector[degree]) +
+        knotVector[degree];
+  
+      //C(t)
+      for (var key = 0; key < n; key++) {
+        var C = basisFunc(key, degree, u);
+        //console.log(C);
+        x += controlPoint[key * 2] * C;
+        y += controlPoint[key * 2 + 1] * C;
+        //console.log(t + " " + degree + " " + x + " " + y + " " + C);
+      }
+      curves.push(x);
+      curves.push(y);
+      curves.push(zValues);
+    }
+    //console.log(curves);
+    return curves;
+  }
 class myObject{
 
      object_vertex = [];
@@ -81,7 +155,7 @@ class myObject{
         GL.uniformMatrix4fv(this._Pmatrix, false, PROJMATRIX);
         GL.uniformMatrix4fv(this._Vmatrix, false, VIEWMATRIX);
         GL.uniformMatrix4fv(this._Mmatrix, false, this.MOVEMATRIX);
-        for (let index = 0; index < this.child.length; index++) {
+        for (var index = 0; index < this.child.length; index++) {
             this.child[index].setUniform4(PROJMATRIX,VIEWMATRIX);
         }
     }
@@ -93,27 +167,43 @@ class myObject{
         GL.vertexAttribPointer(this._color,3,GL.FLOAT,false,4*(3+3), 3*4);
         GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.OBJECT_FACES);
         GL.drawElements(GL.TRIANGLES,this.object_faces.length, GL.UNSIGNED_SHORT,0);
-
         for(var i =0;i <this.child.length;i++){
             this.child[i].draw();
         }
-
     }
+    drawLine(){
+        GL.useProgram(this.SHADER_PROGRAM);
+        GL.bindBuffer(GL.ARRAY_BUFFER,this.OBJECT_VERTEX);
+        GL.vertexAttribPointer(this._position,3,GL.FLOAT,false,4*(3+3), 0);
+        GL.vertexAttribPointer(this._color,3,GL.FLOAT,false,4*(3+3), 3*4);
+        GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.OBJECT_FACES);
+        GL.drawElements(GL.LINE_STRIP,this.object_faces.length, GL.UNSIGNED_SHORT,0);
+        for(var i =0;i <this.child.length;i++){
+            this.child[i].drawLine();
+        }
+    }
+
     // buat anak pernakan
     addChild(child){
         this.child.push(child);
         // tiap kali rotate juga anaknya draw anaknya juga
     }
-    rotate (THETA,PHI,R){
+    rotateAll (THETA,PHI,R){
         glMatrix.mat4.rotateZ(this.MOVEMATRIX, this.MOVEMATRIX,R );
         glMatrix.mat4.rotateY(this.MOVEMATRIX, this.MOVEMATRIX, THETA);
         glMatrix.mat4.rotateX(this.MOVEMATRIX, this.MOVEMATRIX, PHI);
         this.child.forEach(element => {
-            element.rotate(THETA,PHI,R)
+            element.rotateAll(THETA,PHI,R)
         });
     };
-
-
+    translateAll(c){
+        glMatrix.mat4.translate(this.MOVEMATRIX, this.MOVEMATRIX,c);
+        this.child.forEach(element => {
+            element.translateAll(c);
+        });
+    };
+    scallingAll(){
+    };
 };
 
 function Torus(minorRadius, majorRadius, a, b, red, green, blue) {
@@ -322,76 +412,43 @@ function kerucut (rad, length, red, green, blue){
         return{circle_faces,circle_vertex};
     };
 
-function tabung(){
+function tabung(rad, length, red, green,blue){
     var circle_vertex = [];
-var jumlah = 360;
-var colors = []; // Array buat kumpulin  random colors
-
+    var jumlah = 360;
 for (var i = 0; i <= jumlah; i++) {
-    circle_vertex.push(0.5 * Math.cos(i * Math.PI / 180));
-    circle_vertex.push(0.5 * Math.sin(i * Math.PI / 180));
+    circle_vertex.push(rad * Math.cos(i * Math.PI / 180));
+    circle_vertex.push(rad * Math.sin(i * Math.PI / 180));
     circle_vertex.push(0);
-
-    // mengenerate random color sekali setiap 60 vertice
-    if (i % 60 == 0) {
-        colors = [
-            Math.random() * 255 / 255,
-            Math.random() * 255 / 255,
-            Math.random() * 255 / 255
-        ];
-    }
-
-    // di dlm index 60 kalau ga sampe 0 ya belum ganti warna msh sama terus 
-    circle_vertex.push(colors[0]);
-    circle_vertex.push(colors[1]);
-    circle_vertex.push(colors[2]);
+    circle_vertex.push(red);
+    circle_vertex.push(green);
+    circle_vertex.push(blue);
 }
-
 // LINGKARAN BAWAH 
 for (var i = 0; i <= jumlah; i++) {
-    circle_vertex.push(0.5 * Math.cos(i * Math.PI / 180));
-    circle_vertex.push(0.5 * Math.sin(i * Math.PI / 180));
-    circle_vertex.push(-2);
-
-    
-    if (i % 60 == 0) {
-        colors = [
-            Math.random() * 255 / 255,
-            Math.random() * 255 / 255,
-            Math.random() * 255 / 255
-        ];
-    }
-
-    circle_vertex.push(colors[0]);
-    circle_vertex.push(colors[1]);
-    circle_vertex.push(colors[2]);
+    circle_vertex.push(rad * Math.cos(i * Math.PI / 180));
+    circle_vertex.push(rad * Math.sin(i * Math.PI / 180));
+    circle_vertex.push(length);
+    circle_vertex.push(red);
+    circle_vertex.push(green);
+    circle_vertex.push(blue);
 }
-
-
-
-var warna2 = [
-    Math.random() * 255 / 255,
-    Math.random() * 255 / 255,
-    Math.random() * 255 / 255
-];
-
 // untuk titik ditengah atas 
 circle_vertex.push(0);
 circle_vertex.push(0);
 circle_vertex.push(0);
 
-circle_vertex.push(warna2[0]);
-circle_vertex.push(warna2[1]);
-circle_vertex.push(warna2[2]);
+circle_vertex.push(red);
+circle_vertex.push(green);
+circle_vertex.push(blue);
 
 // untuk titik ditengah bawah
 circle_vertex.push(0);
 circle_vertex.push(0);
-circle_vertex.push(-2);
+circle_vertex.push(length);
 
-circle_vertex.push(warna2[0]);
-circle_vertex.push(warna2[1]);
-circle_vertex.push(warna2[2]);
+circle_vertex.push(red);
+circle_vertex.push(green);
+circle_vertex.push(blue);
 
 
 // faces
@@ -405,7 +462,7 @@ for (var i = 0 ; i <= jumlah2 ; i++){
     
 };
 console.log(circle_vertex.length);
-// ALAS ATAS HUHUUHUHH
+// ALAS ATAS 
 for (var i = 361 ; i <= 721 ; i++){
     circle_faces.push(i);
     circle_faces.push(i+1);
@@ -421,7 +478,7 @@ for (var i = 0 ; i <= jumlah2 ; i++){
     circle_faces.push(i+1);
     
 };
-
+return{circle_faces,circle_vertex};
 
 };
 
@@ -510,37 +567,44 @@ function main(){
     //  Sphere(rad,sector,a,b,c, red,green,blue )
     var kepalaAtas = Sphere(1.6, 1, 0.6, 0.86, 1, 1, 1, 1);
     var kepalaBawah = Sphere(0.8, 2,1.2,1,2,1,1,1);
-    var telingakiri = Sphere(0.7,2,0,2,0.8,1,1,1);
-    var telingaKanan = Sphere(0.7,2,0,2,0.8,1,1,1);
+    var telingakiri = Sphere(0.7,2,1,2,0.8,1,1,1);
+    var telingaKanan = Sphere(0.7,2,1,2,0.8,1,1,1);
 
     // BAGIAN MATA
     var mataKiri = Sphere(0.1,2,1.5,2,1,15/255,143/255,212/255);
     var mataKanan = Sphere(0.1,2,1.5,2,1,15/255,143/255,212/255);
 
     // BAGIAN MULUT 
-    // 
+    var mulut = [0.01210389610389607 , 0.15243478260869568 
+        , 0.025974025974025983  , 0.12374581939799334];
+    var gambar = generateBSpline(mulut,100,2);
+    var faces = [];
+    for(var i =0; i < mulut.length; i++){
+        faces.push(i);
+    }
+
 
     // BAGIAN BADAN
     var badan = Sphere(0.8,2,1,1,1.25,1,1,1);
 
     // BAGIAN TANGAN
-    var tangan = Sphere(0.3,1,2,1.5,0.6,1,0,0);
+    var tangan = Sphere(0.3,2,1.5,1,0.6,1,1,1);
     // BAGIAN TOPI
-    var topi = kerucut(0.8,2, 105/255, 7/2552, 181/255);
+    var topi = kerucut(1,2, 105/255, 7/2552, 181/255);
+    var alasTopi = Torus(0.15,1.5,4,1,105/255, 7/2552, 181/255);
+    var pita = Torus(0.1,0.8,3,2,0,0,0);
 
     // BAGIAN KAKI
-    var kaki = Sphere(0.3,2,1,1,0.6,1,0,0);
+    var kaki = Sphere(0.3,2,1,1,0.6,1,1,1);
 
     // BAGIAN SAPU 
-
+    var tongkat = tabung(0.15,3,112/255, 70/255, 23/255);
+    var sapu = kerucut(0.4,0.5, 217/255, 202/255, 34/255);
+    var sapuBawah = Sphere(0.3,2,1.5,1,1,217/255, 202/255, 34/255);
 
     // BAGIAN EKOR
     var ekor = Sphere(0.5,2,1,1,1.25,1,1,1);
 
-    
-
-
-    
 
     var object1 = new myObject(kepalaBawah.object,kepalaBawah.objectface,shader_vertex_source,shader_fragment_source);
     var object2 = new myObject(kepalaAtas.object,kepalaAtas.objectface,shader_vertex_source,shader_fragment_source);
@@ -550,6 +614,9 @@ function main(){
 
     // topi
     var object6 = new myObject(topi.circle_vertex,topi.circle_faces,shader_vertex_source,shader_fragment_source);
+    var object17 = new myObject(alasTopi.object,alasTopi.objectface,shader_vertex_source,shader_fragment_source);
+    var object18 = new myObject(pita.object,pita.objectface,shader_vertex_source,shader_fragment_source);
+
     var object7 = new myObject(ekor.object,ekor.objectface,shader_vertex_source,shader_fragment_source);
     var object8 = new myObject(telingakiri.object,telingakiri.objectface,shader_vertex_source,shader_fragment_source);
     var object9 = new myObject(tangan.object,tangan.objectface,shader_vertex_source,shader_fragment_source);
@@ -557,8 +624,14 @@ function main(){
     var object11 = new myObject(tangan.object,tangan.objectface,shader_vertex_source,shader_fragment_source);
     var object12 = new myObject(kaki.object,kaki.objectface,shader_vertex_source,shader_fragment_source);
     var object13 = new myObject(kaki.object,kaki.objectface,shader_vertex_source,shader_fragment_source);
-    
 
+    // tongkat dan sapu 
+    var object14 = new myObject(tongkat.circle_vertex,tongkat.circle_faces,shader_vertex_source,shader_fragment_source);
+    var object15 = new myObject(sapu.circle_vertex,sapu.circle_faces,shader_vertex_source,shader_fragment_source);
+    var object16 = new myObject(sapuBawah.object,sapuBawah.objectface,shader_vertex_source,shader_fragment_source);
+    var object19 = new myObject(gambar,faces,shader_vertex_source,shader_fragment_source);
+
+    
 
     object1.addChild(object2); // 0
     object1.addChild(object3); // 1
@@ -572,14 +645,16 @@ function main(){
     object1.addChild(object12); // 9
     object1.addChild(object13); // 10
     object1.addChild(object6); // 11
-    
-
-
-    
+    object1.addChild(object14); // 12
+    object1.addChild(object15); // 13
+    object1.addChild(object16); // 14
+    object1.addChild(object17); // 15
+    object1.addChild(object18); // 16
+   // object1.addChild(object19); // 17
     
     
     //MATRIX
-    var PROJMATRIX = LIBS.get_projection(70, CANVAS.width/CANVAS.height,1, 100);
+    var PROJMATRIX = LIBS.get_projection(100, CANVAS.width/CANVAS.height,1, 100);
 
     var VIEWMATRIX = LIBS.get_I4();
 
@@ -595,6 +670,11 @@ function main(){
 
     //DRAWING ---------------------------------------------------------------------------------------------
     var time_prev = 0;
+    let y = 0;
+    let langkah = 0.03; // Kecepatan perubahan y
+    let naik = true; // Menentukan apakah objek sedang naik atau turun
+    
+
     var animate = function(time) {
         if(time > 0) {
             //delta time adalah waktu yang dibutuhkan untuk pindah 1 frame ke frame lain
@@ -611,16 +691,8 @@ function main(){
 
             }
             
-            // harus urut z ,y,x agar muternya benar  
-            // ini buat bs muterin objectnya kyk bumi mengelilingi matahari 
-
-
-            // matrix posisi , matrix rotasi 
-
-
             // create set identity  (0,0,0) --> jd balek ke 0
             object1.MOVEMATRIX = glMatrix.mat4.create();
-            
             object1.child[0].MOVEMATRIX = glMatrix.mat4.create();
             object1.child[1].MOVEMATRIX = glMatrix.mat4.create();
             object1.child[2].MOVEMATRIX = glMatrix.mat4.create();
@@ -633,7 +705,34 @@ function main(){
             object1.child[9].MOVEMATRIX = glMatrix.mat4.create();
             object1.child[10].MOVEMATRIX = glMatrix.mat4.create();
             object1.child[11].MOVEMATRIX = glMatrix.mat4.create();
+            object1.child[12].MOVEMATRIX = glMatrix.mat4.create();
+            object1.child[13].MOVEMATRIX = glMatrix.mat4.create();
+            object1.child[14].MOVEMATRIX = glMatrix.mat4.create();
+            object1.child[15].MOVEMATRIX = glMatrix.mat4.create();
+            object1.child[16].MOVEMATRIX = glMatrix.mat4.create();
+
+            object1.rotateAll(THETA,PHI,0);
+            object1.rotateAll(LIBS.degToRad(-10),LIBS.degToRad(20),0);
+
+            if (naik) {
+                y += langkah;
+                if (y >= 2) { // Batas atas
+                    naik = false; // Ubah arah pergerakan menjadi turun
+                }
+            }
+            // Pergerakan turun
+            else {
+                y -= langkah;
+                if (y <= 0) { // Batas bawah
+                    naik = true; // Ubah arah pergerakan menjadi naik
+                }
+            }
         
+            // Terapkan perubahan posisi pada objek menggunakan translateAll
+            object1.translateAll([0, y, 0]);
+        
+
+
             // buat kepala bawah
             glMatrix.mat4.translate(object1.MOVEMATRIX,object1.MOVEMATRIX, [0.0,0.0,0.0]);
             // buat kepala atas
@@ -646,15 +745,15 @@ function main(){
             glMatrix.mat4.translate(object1.child[3].MOVEMATRIX,object1.child[3].MOVEMATRIX, [0.0,-1.0,0.0]);
 
             // buat tangan kiri
-            glMatrix.mat4.translate(object1.child[6].MOVEMATRIX,object1.child[6].MOVEMATRIX, [-0.7,-0.6,1.5]);
-            glMatrix.mat4.rotateZ(object1.child[6].MOVEMATRIX, object1.child[6].MOVEMATRIX, LIBS.degToRad(75));
+            glMatrix.mat4.translate(object1.child[6].MOVEMATRIX,object1.child[6].MOVEMATRIX, [-0.8,-0.6,0.5]);
+            glMatrix.mat4.rotateZ(object1.child[6].MOVEMATRIX, object1.child[6].MOVEMATRIX, LIBS.degToRad(55));
 
             // buat tangan kanan
-            glMatrix.mat4.translate(object1.child[8].MOVEMATRIX,object1.child[8].MOVEMATRIX, [0.7,-0.6,1.5]);
+            glMatrix.mat4.translate(object1.child[8].MOVEMATRIX,object1.child[8].MOVEMATRIX, [0.8,-0.6,0.5]);
             glMatrix.mat4.rotateZ(object1.child[8].MOVEMATRIX, object1.child[8].MOVEMATRIX, LIBS.degToRad(-75));
 
             // buat ekor
-            glMatrix.mat4.translate(object1.child[4].MOVEMATRIX,object1.child[4].MOVEMATRIX, [0.0,-1.0,-1.0]);
+            glMatrix.mat4.translate(object1.child[4].MOVEMATRIX,object1.child[4].MOVEMATRIX, [0.0,-1.2,-1.0]);
             // buat telinga kiri
             glMatrix.mat4.translate(object1.child[5].MOVEMATRIX,object1.child[5].MOVEMATRIX, [-1.7,0.3,0.0]);
             glMatrix.mat4.rotateZ(object1.child[5].MOVEMATRIX, object1.child[5].MOVEMATRIX, LIBS.degToRad(-65));
@@ -663,22 +762,39 @@ function main(){
             glMatrix.mat4.rotateZ(object1.child[7].MOVEMATRIX, object1.child[7].MOVEMATRIX, LIBS.degToRad(65));
 
             // buat kaki kiri
-            glMatrix.mat4.translate(object1.child[9].MOVEMATRIX,object1.child[9].MOVEMATRIX, [-0.7,-1.2,1.5]);
+            glMatrix.mat4.translate(object1.child[9].MOVEMATRIX,object1.child[9].MOVEMATRIX, [-0.7,-1.4,0.5]);
             glMatrix.mat4.rotateZ(object1.child[9].MOVEMATRIX, object1.child[9].MOVEMATRIX, LIBS.degToRad(75));
 
             // buat kaki kanan
-            glMatrix.mat4.translate(object1.child[10].MOVEMATRIX,object1.child[10].MOVEMATRIX, [0.7,-1.2,1.5]);
+            glMatrix.mat4.translate(object1.child[10].MOVEMATRIX,object1.child[10].MOVEMATRIX, [0.7,-1.4,0.5]);
             glMatrix.mat4.rotateZ(object1.child[10].MOVEMATRIX, object1.child[10].MOVEMATRIX, LIBS.degToRad(-75));
 
             // buat topi
             glMatrix.mat4.translate(object1.child[11].MOVEMATRIX,object1.child[11].MOVEMATRIX, [0.0,1.2,0.0]);
             glMatrix.mat4.rotateX(object1.child[11].MOVEMATRIX, object1.child[11].MOVEMATRIX, LIBS.degToRad(-90));
+            glMatrix.mat4.translate(object1.child[15].MOVEMATRIX,object1.child[15].MOVEMATRIX, [0.0,0.98,0.0]);
+            glMatrix.mat4.rotateX(object1.child[15].MOVEMATRIX, object1.child[15].MOVEMATRIX, LIBS.degToRad(-90));
+            glMatrix.mat4.translate(object1.child[16].MOVEMATRIX,object1.child[16].MOVEMATRIX, [0.0,1.15,0.0]);
+            glMatrix.mat4.rotateX(object1.child[16].MOVEMATRIX, object1.child[16].MOVEMATRIX, LIBS.degToRad(-90));
+
+            // buat tongkat
+            glMatrix.mat4.translate(object1.child[12].MOVEMATRIX,object1.child[12].MOVEMATRIX, [0.8,-2.4,0.3]);
+            glMatrix.mat4.rotateX(object1.child[12].MOVEMATRIX, object1.child[12].MOVEMATRIX, LIBS.degToRad(-70));
+            glMatrix.mat4.rotateY(object1.child[12].MOVEMATRIX, object1.child[12].MOVEMATRIX, LIBS.degToRad(-45));
+            
+            // buat sapu 
+            glMatrix.mat4.translate(object1.child[13].MOVEMATRIX,object1.child[13].MOVEMATRIX, [0.8,-2.4,0.3]);
+            glMatrix.mat4.rotateX(object1.child[13].MOVEMATRIX, object1.child[13].MOVEMATRIX, LIBS.degToRad(100));
+            glMatrix.mat4.rotateY(object1.child[13].MOVEMATRIX, object1.child[13].MOVEMATRIX, LIBS.degToRad(45));
+            
+            // buat sapu bawah 
+            glMatrix.mat4.translate(object1.child[14].MOVEMATRIX,object1.child[14].MOVEMATRIX, [1.35,-2.9,0.2]);
+            glMatrix.mat4.rotateX(object1.child[14].MOVEMATRIX, object1.child[14].MOVEMATRIX, LIBS.degToRad(100));
+            glMatrix.mat4.rotateY(object1.child[14].MOVEMATRIX, object1.child[14].MOVEMATRIX, LIBS.degToRad(45));
+            
 
             // glMatrix.mat4.rotateY(object1.child[11].MOVEMATRIX, object1.child[11].MOVEMATRIX, THETA);
             // glMatrix.mat4.rotateX(object1.child[11].MOVEMATRIX, object1.child[11].MOVEMATRIX, PHI);
-
-            object1.rotate(THETA,PHI,0);
-            
             
             // let rot = glMatrix.quat.fromEuler(glMatrix.quat.create(), PHI, THETA, 0);
             // let trans = glMatrix.vec3.fromValues(0,0,0);
@@ -693,33 +809,13 @@ function main(){
             // glMatrix.mat4.rotateY(object1.MOVEMATRIX, object1.MOVEMATRIX, THETA);
             // glMatrix.mat4.rotateX(object1.MOVEMATRIX, object1.MOVEMATRIX, PHI);
             
-            // glMatrix.mat4.rotateY(object1.child[1].MOVEMATRIX, object1.child[1].MOVEMATRIX, THETA);
-            // glMatrix.mat4.rotateX(object1.child[1].MOVEMATRIX, object1.child[1].MOVEMATRIX, PHI);
-            
-            
-            
-            // glMatrix.mat4.rotateY(object1.child[2].MOVEMATRIX, object1.child[2].MOVEMATRIX, THETA);
-            // glMatrix.mat4.rotateX(object1.child[2].MOVEMATRIX, object1.child[2].MOVEMATRIX, PHI);
-            
-
-            
-            // glMatrix.mat4.rotateY(object1.child[3].MOVEMATRIX, object1.child[3].MOVEMATRIX, THETA);
-            // glMatrix.mat4.rotateX(object1.child[3].MOVEMATRIX, object1.child[3].MOVEMATRIX, PHI);
-           
-            
-            // glMatrix.mat4.rotateY(object1.child[4].MOVEMATRIX, object1.child[4].MOVEMATRIX, THETA);
-            // glMatrix.mat4.rotateX(object1.child[4].MOVEMATRIX, object1.child[4].MOVEMATRIX, PHI);
-
-            // glMatrix.mat4.rotateY(object1.MOVEMATRIX, object1.MOVEMATRIX, THETA);
-            // glMatrix.mat4.rotateX(object1.MOVEMATRIX, object1.MOVEMATRIX, PHI);
-           
-            
-            
-
-            
            // glMatrix.mat4.fromRotationTranslationScaleOrigin(object1.MOVEMATRIX,);
             
           //  console.log(dt); --> untuk menampilkan waktunya di console lewat inspect
+
+          // gerak naik turun object 
+       //   
+
             time_prev = time;
         }
 
@@ -727,16 +823,6 @@ function main(){
         GL.clear(GL.COLOR_BUFFER_BIT | GL.D_BUFFER_BIT);
         object1.setUniform4(PROJMATRIX,VIEWMATRIX);
         object1.draw();
-
-        // object2.setUniform4(PROJMATRIX,VIEWMATRIX);
-        // object2.draw();
-
-        //DRAWING
-        //SEGITIGA yg pointer untuk tau posisi data dr yang -1,-1, dll gt.. 1 nya 4 bit (position 2 , color 3), trus startnya dr 0
-        // untuk color sendiri itu 2 * 4 krn 1 float 4 jd krn ingin melewati 2 position itu jd dikali 2 kali 4 biar lewatin jd bs dpt color
-     
-       
-
         GL.flush();
 
         window.requestAnimationFrame(animate);
