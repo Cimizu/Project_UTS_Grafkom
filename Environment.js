@@ -248,6 +248,12 @@ class myObject{
             this.child[i].origin(phi, theta, r);
         }
     }
+    traansateSemua(c){
+        glMatrix.mat4.translate(this.MOVEMATRIX, this.MOVEMATRIX,c);
+        this.child.forEach(element => {
+            element.translateAll(c);
+        });
+    };
 };
 
 function Torus(minorRadius, majorRadius, a, b, red, green, blue) {
@@ -613,6 +619,9 @@ function main(){
     // BAGIAN BULAN
     var bulan = Sphere(2.5, 2, 1, 1, 1, 248/255, 253/255, 157/255);
     var pumpkin = Sphere(0.5,2,1,1,1,232/255, 138/255, 7/255);
+    var pumpkinBesar = Sphere(1.0,2,1,1,1,232/255, 138/255, 7/255);
+    var grave = Sphere(0.5,1,1.5,2,1,66/255, 65/255, 63/255)
+    var graveBesar = Sphere(1.0,2,1.5,2,1,69/255, 73/255, 61/255)
     // BAGIAN TANAH 
         var triangle_vertex = [
     
@@ -670,6 +679,20 @@ function main(){
     var tanah = new myObject (triangle_vertex, triangle_elements,shader_vertex_source, shader_fragment_source);
     var bulanKembangKempis = new myObject(bulan.object,bulan.objectface,shader_vertex_source,shader_fragment_source);
     var pumpkin1 = new myObject(pumpkin.object,pumpkin.objectface,shader_vertex_source,shader_fragment_source);
+    var pumpkinBesar1 = new myObject(pumpkinBesar.object,pumpkinBesar.objectface,shader_vertex_source,shader_fragment_source);
+    var grave2 = new myObject (grave.object,grave.objectface,shader_vertex_source,shader_fragment_source);
+    var graveBesar2 = new myObject (graveBesar.object,graveBesar.objectface,shader_vertex_source,shader_fragment_source);
+    var grave3 = new myObject (grave.object,grave.objectface,shader_vertex_source,shader_fragment_source);
+    var grave4 = new myObject (grave.object,grave.objectface,shader_vertex_source,shader_fragment_source);
+    var grave5 = new myObject (grave.object,grave.objectface,shader_vertex_source,shader_fragment_source);
+    var grave6 = new myObject(graveBesar.object,graveBesar.objectface,shader_vertex_source,shader_fragment_source);
+    var pumpkin2 = new myObject(pumpkin.object,pumpkin.objectface,shader_vertex_source,shader_fragment_source);
+    grave2.addChild(graveBesar2);
+    grave2.addChild(grave3);
+    grave2.addChild(grave4);
+    grave2.addChild(grave5);
+    grave2.addChild(grave6);
+    pumpkin1.addChild(pumpkin2);
     var simpan = [];
 
 
@@ -919,7 +942,7 @@ function main(){
 
     var VIEWMATRIX = LIBS.get_I4();
 
-    LIBS.translateZ(VIEWMATRIX, -12); //untuk mundurin camera dan camera tidak menabrak dengan objeknya
+    LIBS.translateZ(VIEWMATRIX, -15); //untuk mundurin camera dan camera tidak menabrak dengan objeknya
 
     GL.clearColor(0.0, 0.0, 0.0, 0.0); //R, G, B, Opacity
 
@@ -961,9 +984,17 @@ function main(){
             tanah.MOVEMATRIX = glMatrix.mat4.create();
             bulanKembangKempis.MOVEMATRIX = glMatrix.mat4.create();
             pumpkin1.MOVEMATRIX = glMatrix.mat4.create();
+            pumpkin1.child[0].MOVEMATRIX = glMatrix.mat4.create();
+            pumpkinBesar1.MOVEMATRIX = glMatrix.mat4.create();
+            grave2.MOVEMATRIX = glMatrix.mat4.create();
+            grave2.child[0].MOVEMATRIX = glMatrix.mat4.create();
+            grave2.child[1].MOVEMATRIX = glMatrix.mat4.create();
+            grave2.child[2].MOVEMATRIX = glMatrix.mat4.create();
+            grave2.child[3].MOVEMATRIX = glMatrix.mat4.create();
+            grave2.child[4].MOVEMATRIX = glMatrix.mat4.create();
             
 
-            tanah.rotateAll(THETA,PHI,0);
+           // tanah.rotateAll(THETA,PHI,0);
             bulanKembangKempis.origin(-4.0,1.0,0.0);
 
              if (naik) {
@@ -981,12 +1012,23 @@ function main(){
              }
          
              // // Selalu update perubahan posisi objek pakai translateAll
-              bulanKembangKempis.scalingAll(y);
+            bulanKembangKempis.scalingAll(y);
 
             glMatrix.mat4.translate(tanah.MOVEMATRIX,tanah.MOVEMATRIX, [0.0,-6.0,-7.0]);
             glMatrix.mat4.translate(pumpkin1.MOVEMATRIX,pumpkin1.MOVEMATRIX, [-4.0,-2.0,0.0]);
+            glMatrix.mat4.translate(pumpkin1.child[0].MOVEMATRIX,pumpkin1.child[0].MOVEMATRIX, [-5.0,-2.0,2.0]);
+            glMatrix.mat4.translate(bulanKembangKempis.MOVEMATRIX,bulanKembangKempis.MOVEMATRIX, [-5.0,9.0,0.0]);
+            glMatrix.mat4.translate(pumpkinBesar1.MOVEMATRIX,pumpkinBesar1.MOVEMATRIX, [-8.0,-2.0,-1.0]);
+            glMatrix.mat4.translate(grave2.MOVEMATRIX,grave2.MOVEMATRIX, [8.0,-2.0,1.0]);
+            glMatrix.mat4.translate(grave2.child[0].MOVEMATRIX,grave2.child[0].MOVEMATRIX, [10.0,-2.0,1.0]);
+            glMatrix.mat4.translate(grave2.child[1].MOVEMATRIX,grave2.child[1].MOVEMATRIX, [12.0,-2.0,1.0]);
+            glMatrix.mat4.translate(grave2.child[2].MOVEMATRIX,grave2.child[2].MOVEMATRIX, [-10.0,-2.0,1.0]);
+            glMatrix.mat4.translate(grave2.child[3].MOVEMATRIX,grave2.child[3].MOVEMATRIX, [-12.0,-2.0,1.0]);
+            glMatrix.mat4.translate(grave2.child[4].MOVEMATRIX,grave2.child[4].MOVEMATRIX, [-15.0,-2.0,0.0]);
 
-            glMatrix.mat4.translate(bulanKembangKempis.MOVEMATRIX,bulanKembangKempis.MOVEMATRIX, [-4.0,9.0,0.0]);
+
+
+            // ================================================ CINNAMOROLL ================================
             //  object cinnamoroll create set identity  (0,0,0) --> jd balek ke 0
             object1a.MOVEMATRIX = glMatrix.mat4.create(); 
             object1a.child[0].MOVEMATRIX = glMatrix.mat4.create();
@@ -1009,28 +1051,32 @@ function main(){
             object1a.child[17].MOVEMATRIX = glMatrix.mat4.create();
             object1a.child[18].MOVEMATRIX = glMatrix.mat4.create();
             object1a.child[19].MOVEMATRIX = glMatrix.mat4.create();
-           
+
 
             object1a.origin(0,1,0);
+            
             // object1.translateAll([2,0,0]);
             //object1a.rotateAll(LIBS.degToRad(-10),LIBS.degToRad(20),0);
 
            if (naik) {
                y = 0.03; // langkah; // kalau naik bertambah terus pergerakannya
-                if (object1a.translasi[1] >= 2 ) { // Batas atas
+                if (object1a.translasi[1] >= 3 ) { // Batas atas
                     naik = false; // Ubah arah pergerakan menjadi turun
                 }
             }
             //Pergerakan turun
             else {
                 y = -0.03; // kalau udh sampai atas bakal turun pergerakannya
-                if (object1a.translasi[1] <= 0) { // Batas bawah
+                if (object1a.translasi[1] <= 1) { // Batas bawah
                     naik = true; // Ubah arah pergerakan menjadi naik
                 }
             }
         
             // // Selalu update perubahan posisi objek pakai translateAll
+            //object1a.rotateAll(LIBS.degToRad(60),0,0);
+
              object1a.translateAll(0,y,0);
+            
 
 
              
@@ -1041,64 +1087,69 @@ function main(){
             // tanah di translasli
 
             // buat kepala bawah
-            glMatrix.mat4.translate(object1a.MOVEMATRIX,object1a.MOVEMATRIX, [0.0,0.0,0.0]);
+            glMatrix.mat4.translate(object1a.MOVEMATRIX,object1a.MOVEMATRIX, [7.0,0.0,0.0]);
            
             // buat kepala atas
-            glMatrix.mat4.translate(object1a.child[0].MOVEMATRIX,object1a.child[0].MOVEMATRIX, [0.0,0.0,0.0]);
+            glMatrix.mat4.translate(object1a.child[0].MOVEMATRIX,object1a.child[0].MOVEMATRIX, [7.0,0.0,0.0]);
             // buat mata kiri
-            glMatrix.mat4.translate(object1a.child[1].MOVEMATRIX,object1a.child[1].MOVEMATRIX, [-0.6,0.1,0.85]);
+            glMatrix.mat4.translate(object1a.child[1].MOVEMATRIX,object1a.child[1].MOVEMATRIX, [5.8,0.1,0.85]);
             // buat mata kanan
-            glMatrix.mat4.translate(object1a.child[2].MOVEMATRIX,object1a.child[2].MOVEMATRIX, [0.6,0.1,0.85]);
+            glMatrix.mat4.translate(object1a.child[2].MOVEMATRIX,object1a.child[2].MOVEMATRIX, [7.0,0.1,0.95]);
             // buat badan
-            glMatrix.mat4.translate(object1a.child[3].MOVEMATRIX,object1a.child[3].MOVEMATRIX, [0.0,-1.0,0.0]);
+            glMatrix.mat4.translate(object1a.child[3].MOVEMATRIX,object1a.child[3].MOVEMATRIX, [7.0,-1.0,0.0]);
 
             // buat tangan kiri
-            glMatrix.mat4.translate(object1a.child[6].MOVEMATRIX,object1a.child[6].MOVEMATRIX, [-1.0,-0.6,0.5]);
+            glMatrix.mat4.translate(object1a.child[6].MOVEMATRIX,object1a.child[6].MOVEMATRIX, [5.7,-0.6,0.5]);
             glMatrix.mat4.rotateZ(object1a.child[6].MOVEMATRIX, object1a.child[6].MOVEMATRIX, LIBS.degToRad(95));
 
             // buat tangan kanan
-            glMatrix.mat4.translate(object1a.child[8].MOVEMATRIX,object1a.child[8].MOVEMATRIX, [0.8,-0.6,0.7]);
+            glMatrix.mat4.translate(object1a.child[8].MOVEMATRIX,object1a.child[8].MOVEMATRIX, [7.8,-0.6,0.7]);
             glMatrix.mat4.rotateZ(object1a.child[8].MOVEMATRIX, object1a.child[8].MOVEMATRIX, LIBS.degToRad(-65));
 
             // buat ekor
-            glMatrix.mat4.translate(object1a.child[4].MOVEMATRIX,object1a.child[4].MOVEMATRIX, [0.0,-1.2,-1.0]);
+            glMatrix.mat4.translate(object1a.child[4].MOVEMATRIX,object1a.child[4].MOVEMATRIX, [7.0,-1.2,-1.0]);
             // buat telinga kiri
-            glMatrix.mat4.translate(object1a.child[5].MOVEMATRIX,object1a.child[5].MOVEMATRIX, [-2.0,0.3,0.0]);
+            glMatrix.mat4.translate(object1a.child[5].MOVEMATRIX,object1a.child[5].MOVEMATRIX, [5.0,0.3,0.0]);
             glMatrix.mat4.rotateZ(object1a.child[5].MOVEMATRIX, object1a.child[5].MOVEMATRIX, LIBS.degToRad(-65));
             // telinga kanan 
-            glMatrix.mat4.translate(object1a.child[7].MOVEMATRIX,object1a.child[7].MOVEMATRIX, [1.7,0.3,0.0]);
+            glMatrix.mat4.translate(object1a.child[7].MOVEMATRIX,object1a.child[7].MOVEMATRIX, [8.7,0.3,0.0]);
             glMatrix.mat4.rotateZ(object1a.child[7].MOVEMATRIX, object1a.child[7].MOVEMATRIX, LIBS.degToRad(65));
 
             // buat kaki kiri
-            glMatrix.mat4.translate(object1a.child[9].MOVEMATRIX,object1a.child[9].MOVEMATRIX, [-0.7,-1.4,0.5]);
+            glMatrix.mat4.translate(object1a.child[9].MOVEMATRIX,object1a.child[9].MOVEMATRIX, [5.9,-1.4,0.5]);
             glMatrix.mat4.rotateZ(object1a.child[9].MOVEMATRIX, object1a.child[9].MOVEMATRIX, LIBS.degToRad(75));
 
             // buat kaki kanan
-            glMatrix.mat4.translate(object1a.child[10].MOVEMATRIX,object1a.child[10].MOVEMATRIX, [0.7,-1.4,0.5]);
+            glMatrix.mat4.translate(object1a.child[10].MOVEMATRIX,object1a.child[10].MOVEMATRIX, [7.7,-1.4,0.5]);
             glMatrix.mat4.rotateZ(object1a.child[10].MOVEMATRIX, object1a.child[10].MOVEMATRIX, LIBS.degToRad(-75));
 
             // buat topi
-            glMatrix.mat4.translate(object1a.child[11].MOVEMATRIX,object1a.child[11].MOVEMATRIX, [0.0,1.2,0.0]);
+            glMatrix.mat4.translate(object1a.child[11].MOVEMATRIX,object1a.child[11].MOVEMATRIX, [7.0,1.2,0.0]);
             glMatrix.mat4.rotateX(object1a.child[11].MOVEMATRIX, object1a.child[11].MOVEMATRIX, LIBS.degToRad(-90));
-            glMatrix.mat4.translate(object1a.child[15].MOVEMATRIX,object1a.child[15].MOVEMATRIX, [0.0,0.98,0.0]);
+            glMatrix.mat4.translate(object1a.child[15].MOVEMATRIX,object1a.child[15].MOVEMATRIX, [7.0,0.98,0.0]);
             glMatrix.mat4.rotateX(object1a.child[15].MOVEMATRIX, object1a.child[15].MOVEMATRIX, LIBS.degToRad(-90));
-            glMatrix.mat4.translate(object1a.child[16].MOVEMATRIX,object1a.child[16].MOVEMATRIX, [0.0,1.15,0.0]);
+            glMatrix.mat4.translate(object1a.child[16].MOVEMATRIX,object1a.child[16].MOVEMATRIX, [7.0,1.15,0.0]);
             glMatrix.mat4.rotateX(object1a.child[16].MOVEMATRIX, object1a.child[16].MOVEMATRIX, LIBS.degToRad(-90));
 
             // buat tongkat
-            glMatrix.mat4.translate(object1a.child[12].MOVEMATRIX,object1a.child[12].MOVEMATRIX, [0.8,-2.4,0.3]);
+            glMatrix.mat4.translate(object1a.child[12].MOVEMATRIX,object1a.child[12].MOVEMATRIX, [6.9,-2.4,0.3]);
             glMatrix.mat4.rotateX(object1a.child[12].MOVEMATRIX, object1a.child[12].MOVEMATRIX, LIBS.degToRad(-70));
             glMatrix.mat4.rotateY(object1a.child[12].MOVEMATRIX, object1a.child[12].MOVEMATRIX, LIBS.degToRad(-45));
             
             // buat sapu 
-            glMatrix.mat4.translate(object1a.child[13].MOVEMATRIX,object1a.child[13].MOVEMATRIX, [0.8,-2.4,0.3]);
+            glMatrix.mat4.translate(object1a.child[13].MOVEMATRIX,object1a.child[13].MOVEMATRIX, [6.9,-2.4,0.3]);
             glMatrix.mat4.rotateX(object1a.child[13].MOVEMATRIX, object1a.child[13].MOVEMATRIX, LIBS.degToRad(100));
             glMatrix.mat4.rotateY(object1a.child[13].MOVEMATRIX, object1a.child[13].MOVEMATRIX, LIBS.degToRad(45));
             
             // buat sapu bawah 
-            glMatrix.mat4.translate(object1a.child[14].MOVEMATRIX,object1a.child[14].MOVEMATRIX, [1.35,-2.9,0.2]);
+            glMatrix.mat4.translate(object1a.child[14].MOVEMATRIX,object1a.child[14].MOVEMATRIX, [7.45,-2.9,0.2]);
             glMatrix.mat4.rotateX(object1a.child[14].MOVEMATRIX, object1a.child[14].MOVEMATRIX, LIBS.degToRad(100));
             glMatrix.mat4.rotateY(object1a.child[14].MOVEMATRIX, object1a.child[14].MOVEMATRIX, LIBS.degToRad(45));
+
+            // buat mulut
+            glMatrix.mat4.translate(object1a.child[17].MOVEMATRIX,object1a.child[17].MOVEMATRIX, [6.45,0.0,0.0]);
+            glMatrix.mat4.translate(object1a.child[18].MOVEMATRIX,object1a.child[18].MOVEMATRIX, [6.45,0.0,0.0]);
+            glMatrix.mat4.translate(object1a.child[19].MOVEMATRIX,object1a.child[19].MOVEMATRIX, [7.0,0.0,0.0]);
             
 
             // =========================================== POCHACO ===================================
@@ -1131,6 +1182,7 @@ function main(){
             object1b.child[24].MOVEMATRIX = glMatrix.mat4.create();
             object1b.child[25].MOVEMATRIX = glMatrix.mat4.create();
 
+            
             if (gerak_naik) {
                 x = -0.15;
                 trans = -0.001;
@@ -1152,6 +1204,7 @@ function main(){
             object14b.rotateAll(0, 0, -x);
             object14b.translateAll(-trans, 0, 0);
             object14b.origin(0, 0, 0);
+            
 
             //kepala atas
             glMatrix.mat4.translate(object1b.MOVEMATRIX,object1b.MOVEMATRIX, [0.0, 0.2, 0.0]);
@@ -1265,6 +1318,10 @@ function main(){
         bulanKembangKempis.draw(mulutSemua);
         pumpkin1.setUniform4(PROJMATRIX,VIEWMATRIX);
         pumpkin1.draw(mulutSemua);
+        pumpkinBesar1.setUniform4(PROJMATRIX,VIEWMATRIX);
+        pumpkinBesar1.draw(mulutSemua);
+        grave2.setUniform4(PROJMATRIX,VIEWMATRIX);
+        grave2.draw(mulutSemua);
         GL.flush();
 
         window.requestAnimationFrame(animate);
