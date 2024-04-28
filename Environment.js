@@ -243,7 +243,7 @@ class myObject{
         var scale = glMatrix.vec3.fromValues(this.scale[0], this.scale[1], this.scale[2]);
         var ori = glMatrix.vec3.fromValues(-this.translasi[0], -this.translasi[1], -this.translasi[2]);
         glMatrix.mat4.fromRotationTranslationScaleOrigin(this.MOVEMATRIX, rot, trans, scale, ori);
-        
+
         for(var i = 0; i < this.child.length; i++) {
             this.child[i].origin(phi, theta, r);
         }
@@ -879,6 +879,9 @@ function main(){
     
     var scar = [];
     scar.push(scar1, scar2, scar3, scar4);
+
+    object12b.addChild(object13b);
+    object14b.addChild(object15b);
 
     object1b.addChild(object2b);
     object1b.addChild(object3b);
