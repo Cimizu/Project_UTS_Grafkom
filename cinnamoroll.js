@@ -80,71 +80,74 @@ function normalizeScreen(x, y, width, height) {
     return curves;
 }
 class myObject{
-
-     object_vertex = [];
+    object_vertex = [];
     // ini bebas yang var tp GL hrs sama
-     OBJECT_VERTEX = GL.createBuffer();
-     object_faces = [];
-     OBJECT_FACES= GL.createBuffer();
-     // kasih anak
-     child =[];
+    OBJECT_VERTEX = GL.createBuffer();
+    object_faces = [];
+    OBJECT_FACES= GL.createBuffer();
+    // kasih anak
+    child = [];
+    translasi = [0, 0, 0];
+    rotasi = [0, 0, 0];
+    scale = [1, 1, 1];
    
-
     shader_vertex_source;
     // vColor hrs sama atas dan bawah kalau ga ga jalan, Fragcolor buat panggil warnanya
     shader_fragment_source;
 
     // ini template diambil aja 
-     compile_shader = function(source, type, typeString){
+    compile_shader = function(source, type, typeString){
         var shader = GL.createShader(type);
         GL.shaderSource(shader, source);
         GL.compileShader(shader);
-        if(!GL.getShaderParameter(shader, GL.COMPILE_STATUS)){
+        if (!GL.getShaderParameter(shader, GL.COMPILE_STATUS)) {
             alert("ERROR IN" + typeString + "SHADER: " + GL.getShaderInfoLog(shader));
             return false;
         }
         return shader;
     };
-     shader_vertex ;
-     shader_fragment;
 
-     SHADER_PROGRAM;
-     _Pmatrix;
-     _Vmatrix;
-     _Mmatrix;
-     _color;
-     _position;
-     MOVEMATRIX = LIBS.get_I4();
+    shader_vertex ;
+    shader_fragment;
+
+    SHADER_PROGRAM;
+    _Pmatrix;
+    _Vmatrix;
+    _Mmatrix;
+    _color;
+    _position;
+    MOVEMATRIX = LIBS.get_I4();
+
     constructor(object_vertex, object_faces,shader_vertex_source,shader_fragment_source){
         this.object_vertex = object_vertex;
         this.object_faces = object_faces;
         this.shader_vertex_source = shader_vertex_source;
         this.shader_fragment_source = shader_fragment_source;
-       this.shader_vertex = this.compile_shader(this.shader_vertex_source, GL.VERTEX_SHADER, "VERTEX");
-       this.shader_fragment = this.compile_shader(this.shader_fragment_source,GL.FRAGMENT_SHADER, "FRAGMENT");
+        this.shader_vertex = this.compile_shader(this.shader_vertex_source, GL.VERTEX_SHADER, "VERTEX");
+        this.shader_fragment = this.compile_shader(this.shader_fragment_source,GL.FRAGMENT_SHADER, "FRAGMENT");
    
-       this.SHADER_PROGRAM = GL.createProgram();
-       GL.attachShader(this.SHADER_PROGRAM,this.shader_vertex);
-       GL.attachShader(this.SHADER_PROGRAM,this.shader_fragment);
+        this.SHADER_PROGRAM = GL.createProgram();
+        GL.attachShader(this.SHADER_PROGRAM,this.shader_vertex);
+        GL.attachShader(this.SHADER_PROGRAM,this.shader_fragment);
    
-       GL.linkProgram(this.SHADER_PROGRAM);
+        GL.linkProgram(this.SHADER_PROGRAM);
    
-       this._Pmatrix = GL.getUniformLocation(this.SHADER_PROGRAM, "Pmatrix");
-       this._Vmatrix = GL.getUniformLocation(this.SHADER_PROGRAM, "Vmatrix");
-       this. _Mmatrix = GL.getUniformLocation(this.SHADER_PROGRAM, "Mmatrix");
+        this._Pmatrix = GL.getUniformLocation(this.SHADER_PROGRAM, "Pmatrix");
+        this._Vmatrix = GL.getUniformLocation(this.SHADER_PROGRAM, "Vmatrix");
+        this. _Mmatrix = GL.getUniformLocation(this.SHADER_PROGRAM, "Mmatrix");
    
-       this._color = GL.getAttribLocation(this.SHADER_PROGRAM, "color");
-       this._position = GL.getAttribLocation(this.SHADER_PROGRAM, "position");
+        this._color = GL.getAttribLocation(this.SHADER_PROGRAM, "color");
+        this._position = GL.getAttribLocation(this.SHADER_PROGRAM, "position");
    
-       GL.enableVertexAttribArray(this._color);
-       GL.enableVertexAttribArray(this._position);
+        GL.enableVertexAttribArray(this._color);
+        GL.enableVertexAttribArray(this._position);
    
-       GL.useProgram(this.SHADER_PROGRAM);
-       this.initializeObject();
+        GL.useProgram(this.SHADER_PROGRAM);
+        this.initializeObject();
     }
 
     initializeObject(){
-            // cara panggil ksh tau untuk menghandle tipe data tipenya float
+        // cara panggil ksh tau untuk menghandle tipe data tipenya float
         GL.bindBuffer(GL.ARRAY_BUFFER, this.OBJECT_VERTEX);
         // KSH TAU KOMPUTER DATANYA YANG MANA 
         GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(this.object_vertex), GL.STATIC_DRAW);
@@ -155,6 +158,7 @@ class myObject{
         // DATA BUKAN FLOAT INTEGER KRN INDEX PASTI KYK 1 2 3
         GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.object_faces), GL.STATIC_DRAW);
     }
+
     setUniform4(PROJMATRIX,VIEWMATRIX){
         GL.useProgram(this.SHADER_PROGRAM); // ini bentukkan vlass untuk membuat objek ?
         GL.uniformMatrix4fv(this._Pmatrix, false, PROJMATRIX);
@@ -192,7 +196,7 @@ class myObject{
         GL.vertexAttribPointer(this._color, 3, GL.FLOAT, false, 4*(3+3), 3*4);
         GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.OBJECT_FACES);
         GL.drawElements(GL.LINE_STRIP, this.object_faces.length, GL.UNSIGNED_SHORT, 0);
-        
+
         for(var i = 0; i < this.child.length;i++){
             for(var j = 0; j < obj_curve.length; j++) {
                 if(this.child[i] == obj_curve[j]) {
@@ -210,22 +214,39 @@ class myObject{
         this.child.push(child);
         // tiap kali rotate juga anaknya draw anaknya juga
     }
-    rotateAll (THETA,PHI,R){
-        glMatrix.mat4.rotateZ(this.MOVEMATRIX, this.MOVEMATRIX,R );
-        glMatrix.mat4.rotateY(this.MOVEMATRIX, this.MOVEMATRIX, THETA);
-        glMatrix.mat4.rotateX(this.MOVEMATRIX, this.MOVEMATRIX, PHI);
+
+    rotateAll(THETA,PHI,R){
+        this.rotasi = [this.rotasi[0] + PHI, this.rotasi[1] + THETA, this.rotasi[0] + R];
         this.child.forEach(element => {
             element.rotateAll(THETA,PHI,R)
         });
     };
-    translateAll(c){
-        glMatrix.mat4.translate(this.MOVEMATRIX, this.MOVEMATRIX,c);
+
+    translateAll(a,b,c) {
+        this.translasi = [this.translasi[0] + a, this.translasi[1] + b, this.translasi[2] + c];
+        this.child.forEach(element => {
+            element.translateAll(a,b,c);
+        });
+    };
+
+    scalingAll(c) {
+        this.translasi = [this.scale[0] * c, this.scale[1] * c, this.scale[2] * c];
         this.child.forEach(element => {
             element.translateAll(c);
         });
-    };
-    scallingAll(){
-    };
+    }
+
+    origin(phi, theta, r) {
+        let rot = glMatrix.quat.fromEuler(glMatrix.quat.create(), this.rotasi[0] + phi, this.rotasi[1] + theta, this.rotasi[2] + r);
+        let trans = glMatrix.vec3.fromValues(this.translasi[0], this.translasi[1], this.translasi[2]);
+        let scale = glMatrix.vec3.fromValues(this.scale[0], this.scale[1], this.scale[2]);
+        let ori = glMatrix.vec3.fromValues(-this.translasi[0], -this.translasi[1], -this.translasi[2]);
+        glMatrix.mat4.fromRotationTranslationScaleOrigin(this.MOVEMATRIX, rot, trans, scale, ori);
+        
+        for(var i = 0; i < this.child.length; i++) {
+            this.child[i].origin(phi, theta, r);
+        }
+    }
 };
 
 function Torus(minorRadius, majorRadius, a, b, red, green, blue) {
@@ -585,6 +606,8 @@ function main(){
         gl_FragColor = vec4(vColor, 1.0);
     }`;
 
+    var bulan = Sphere(2.5,2,1,1,1,248/255, 253/255, 157/255);
+
     // BAGIAN KEPALA
     //  Sphere(rad,sector,a,b,c, red,green,blue )
     var kepalaAtas = Sphere(1.6, 1, 0.6, 0.86, 1, 1, 1, 1);
@@ -671,6 +694,7 @@ function main(){
     var object21a = new myObject(drawEkor,faces3,shader_vertex_source,shader_fragment_source);
     var mulutSemua = [];
     mulutSemua.push(object19a,object20a,object21a);
+    var bulanKembangKempis = new myObject(bulan.object,bulan.objectface,shader_vertex_source,shader_fragment_source);
     
 
     object1a.addChild(object2a); // 0
@@ -713,10 +737,7 @@ function main(){
     //DRAWING ---------------------------------------------------------------------------------------------
     var time_prev = 0;
     let y = 0;
-    let langkah = 0.03; // Kecepatan perubahan y
     let naik = true; // Menentukan apakah objek sedang naik atau turun
-    
-
     var animate = function(time) {
         if(time > 0) {
             //delta time adalah waktu yang dibutuhkan untuk pindah 1 frame ke frame lain
@@ -732,6 +753,7 @@ function main(){
                 PHI+=dY;
 
             }
+            bulanKembangKempis.MOVEMATRIX = glMatrix.mat4.create();
             
             // create set identity  (0,0,0) --> jd balek ke 0
             object1a.MOVEMATRIX = glMatrix.mat4.create();
@@ -756,30 +778,50 @@ function main(){
             object1a.child[18].MOVEMATRIX = glMatrix.mat4.create();
             object1a.child[19].MOVEMATRIX = glMatrix.mat4.create();
 
-            object1a.rotateAll(THETA,PHI,0);
-            // object1.translateAll([2,0,0]);
-            object1a.rotateAll(LIBS.degToRad(-10),LIBS.degToRad(20),0);
+           
 
-            if (naik) {
-                y += langkah; // kalau naik bertambah terus pergerakannya
-                if (y >= 2) { // Batas atas
+            object1a.origin(0,1,0);
+            // object1.translateAll([2,0,0]);
+            //object1a.rotateAll(LIBS.degToRad(-10),LIBS.degToRad(20),0);
+
+           if (naik) {
+               y = 0.03; // langkah; // kalau naik bertambah terus pergerakannya
+                if (object1a.translasi[1] >= 2 ) { // Batas atas
                     naik = false; // Ubah arah pergerakan menjadi turun
-                    
                 }
             }
-            // Pergerakan turun
+            //Pergerakan turun
             else {
-                y -= langkah; // kalau udh sampai atas bakal turun pergerakannya
-                if (y <= 0) { // Batas bawah
+                y = -0.03; // kalau udh sampai atas bakal turun pergerakannya
+                if (object1a.translasi[1] <= 0) { // Batas bawah
                     naik = true; // Ubah arah pergerakan menjadi naik
                 }
             }
         
-            // Selalu update perubahan posisi objek pakai translateAll
-            object1a.translateAll([0, y, 0]);
-            
+            // // Selalu update perubahan posisi objek pakai translateAll
+             object1a.translateAll(0,y,0);
 
+             bulanKembangKempis.origin(-4.0,1.0,0.0);
 
+             if (naik) {
+                y *= 0.2; // kalau naik bertambah terus pergerakannya
+                 if (bulanKembangKempis.scale[2] >= 2 ) { // Batas atas
+                     naik = false; // Ubah arah pergerakan menjadi turun
+                 }
+             }
+             //Pergerakan turun
+             else {
+                 y /= -0.2; // kalau udh sampai atas bakal turun pergerakannya
+                 if (bulanKembangKempis.scale[2] <=0) { // Batas bawah
+                     naik = true; // Ubah arah pergerakan menjadi naik
+                 }
+             }
+         
+             // // Selalu update perubahan posisi objek pakai translateAll
+              bulanKembangKempis.scalingAll(y);
+
+             
+            glMatrix.mat4.translate(bulanKembangKempis.MOVEMATRIX,bulanKembangKempis.MOVEMATRIX, [-4.0,0.0,0.0]);
             // buat kepala bawah
             glMatrix.mat4.translate(object1a.MOVEMATRIX,object1a.MOVEMATRIX, [0.0,0.0,0.0]);
             // buat kepala atas
@@ -839,30 +881,6 @@ function main(){
             glMatrix.mat4.rotateX(object1a.child[14].MOVEMATRIX, object1a.child[14].MOVEMATRIX, LIBS.degToRad(100));
             glMatrix.mat4.rotateY(object1a.child[14].MOVEMATRIX, object1a.child[14].MOVEMATRIX, LIBS.degToRad(45));
             
-
-            // glMatrix.mat4.rotateY(object1a.child[11].MOVEMATRIX, object1.child[11].MOVEMATRIX, THETA);
-            // glMatrix.mat4.rotateX(object1.child[11].MOVEMATRIX, object1.child[11].MOVEMATRIX, PHI);
-            
-            // let rot = glMatrix.quat.fromEuler(glMatrix.quat.create(), PHI, THETA, 0);
-            // let trans = glMatrix.vec3.fromValues(0,0,0);
-            // let scale = glMatrix.vec3.fromValues(1,1,1);
-            // let ori = glMatrix.vec3.fromValues(0,0,0);
-            // glMatrix.mat4.fromRotationTranslationScaleOrigin(this.MOVEMATRIX, rot, trans, scale, ori);
-            
-           
-            // glMatrix.mat4.rotateY(object1.child[0].MOVEMATRIX, object1.child[0].MOVEMATRIX, THETA);
-            // glMatrix.mat4.rotateX(object1.child[0].MOVEMATRIX, object1.child[0].MOVEMATRIX, PHI);
-            
-            // glMatrix.mat4.rotateY(object1.MOVEMATRIX, object1.MOVEMATRIX, THETA);
-            // glMatrix.mat4.rotateX(object1.MOVEMATRIX, object1.MOVEMATRIX, PHI);
-            
-           // glMatrix.mat4.fromRotationTranslationScaleOrigin(object1.MOVEMATRIX,);
-            
-          //  console.log(dt); --> untuk menampilkan waktunya di console lewat inspect
-
-          // gerak naik turun object 
-       //   
-
             time_prev = time;
         }
 
@@ -870,6 +888,8 @@ function main(){
         GL.clear(GL.COLOR_BUFFER_BIT | GL.D_BUFFER_BIT);
         object1a.setUniform4(PROJMATRIX,VIEWMATRIX);
         object1a.draw(mulutSemua);
+        bulanKembangKempis.setUniform4(PROJMATRIX,VIEWMATRIX);
+        bulanKembangKempis.draw(mulutSemua);
         GL.flush();
 
         window.requestAnimationFrame(animate);
