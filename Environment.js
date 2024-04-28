@@ -216,13 +216,6 @@ class myObject{
         // tiap kali rotate juga anaknya draw anaknya juga
     }
 
-    translateAllGL(a, b, c) {
-        glMatrix.mat4.translate(this.MOVEMATRIX, this.MOVEMATRIX,[a, b, c]);
-        this.child.forEach(element => {
-            element.translateAll(a, b, c);
-        });
-    }
-
     rotateAll(PHI, THETA, R){
         this.rotasi = [this.rotasi[0] + PHI, this.rotasi[1] + THETA, this.rotasi[2] + R];
         this.child.forEach(element => {
@@ -946,7 +939,7 @@ function main(){
     var x = 0;
     var trans = 0;
     var gerak_naik = true;
-    
+    var pindah = false;
 
     var animate = function(time) {
         if(time > 0) {
@@ -1152,8 +1145,6 @@ function main(){
                     gerak_naik = true;
                 }
             }
-
-            
 
             object12b.rotateAll(0, 0, x);
             object12b.translateAll(trans, 0, 0);
