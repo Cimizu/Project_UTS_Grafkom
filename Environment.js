@@ -216,6 +216,13 @@ class myObject{
         // tiap kali rotate juga anaknya draw anaknya juga
     }
 
+    translateAllGL(a, b, c) {
+        glMatrix.mat4.translate(this.MOVEMATRIX, this.MOVEMATRIX,[a, b, c]);
+        this.child.forEach(element => {
+            element.translateAll(a, b, c);
+        });
+    }
+
     rotateAll(PHI, THETA, R){
         this.rotasi = [this.rotasi[0] + PHI, this.rotasi[1] + THETA, this.rotasi[2] + R];
         this.child.forEach(element => {
@@ -1146,13 +1153,14 @@ function main(){
                 }
             }
 
+            
+
             object12b.rotateAll(0, 0, x);
             object12b.translateAll(trans, 0, 0);
             object12b.origin(0, 0, 0);
             object14b.rotateAll(0, 0, -x);
             object14b.translateAll(-trans, 0, 0);
             object14b.origin(0, 0, 0);
-
 
             //kepala atas
             glMatrix.mat4.translate(object1b.MOVEMATRIX,object1b.MOVEMATRIX, [0.0, 0.2, 0.0]);
