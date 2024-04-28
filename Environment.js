@@ -855,6 +855,7 @@ var triangle3_elements = [
     var bangunan3 = new myObject (triangle2_vertex, triangle2_elements,shader_vertex_source, shader_fragment_source);
     var bangunan4 = new myObject (triangle3_vertex, triangle3_elements,shader_vertex_source, shader_fragment_source);
     var bangunan5 = new myObject (triangle3_vertex, triangle3_elements,shader_vertex_source, shader_fragment_source);
+    var pumpkin4 = new myObject(pumpkin.object,pumpkin.objectface,shader_vertex_source,shader_fragment_source);
     grave2.addChild(graveBesar2);
     grave2.addChild(grave3);
     grave2.addChild(grave4);
@@ -862,6 +863,7 @@ var triangle3_elements = [
     grave2.addChild(grave6);
     pumpkin1.addChild(pumpkin2);
     pumpkin1.addChild(pumpkin3);
+    pumpkin1.addChild(pumpkin4);
     bangunan.addChild(bangunan2);
     bangunan.addChild(bangunan3);
     bangunan.addChild(bangunan4);
@@ -1160,6 +1162,7 @@ var triangle3_elements = [
             pumpkin1.MOVEMATRIX = glMatrix.mat4.create();
             pumpkin1.child[0].MOVEMATRIX = glMatrix.mat4.create();
             pumpkin1.child[1].MOVEMATRIX = glMatrix.mat4.create();
+            pumpkin1.child[2].MOVEMATRIX = glMatrix.mat4.create();
             pumpkinBesar1.MOVEMATRIX = glMatrix.mat4.create();
             grave2.MOVEMATRIX = glMatrix.mat4.create();
             grave2.child[0].MOVEMATRIX = glMatrix.mat4.create();
@@ -1177,19 +1180,19 @@ var triangle3_elements = [
            // tanah.rotateAll(THETA,PHI,0);
             bulanKembangKempis.origin(-4.0,1.0,0.0);
 
-             if (naik) {
-                y *= 0.09; // kalau naik bertambah terus pergerakannya
+            //  if (naik) {
+                y *= 0.09; 
                  if (bulanKembangKempis.scale[0] >= 2 && bulanKembangKempis.scale[1] >= 2 && bulanKembangKempis.scale[2] >= 2   ) { // Batas atas
-                     naik = false; // Ubah arah pergerakan menjadi turun
+                     naik = false; 
                  }
-             }
+         //    }
              //Pergerakan turun
-             else {
-                 y /= -0.09; // kalau udh sampai atas bakal turun pergerakannya
+            //  else {
+                 y /= -0.09; 
                  if (bulanKembangKempis.scale[0] <=0 && bulanKembangKempis.scale[1] >= 2 && bulanKembangKempis.scale[2] >= 2  ) { // Batas bawah
-                     naik = true; // Ubah arah pergerakan menjadi naik
+                     naik = true; 
                  }
-             }
+          //   }
          
              // // Selalu update perubahan posisi objek pakai translateAll
             bulanKembangKempis.scalingAll(y);
