@@ -1126,8 +1126,28 @@ function main(){
             object1b.child[24].MOVEMATRIX = glMatrix.mat4.create();
             object1b.child[25].MOVEMATRIX = glMatrix.mat4.create();
 
-            object1b.rotateAll(THETA,PHI,0);
-            object1b.translateAll([6,-0.2,0]);
+            if (gerak_naik) {
+                x = -0.15;
+                trans = -0.001;
+                if(object12b.rotasi[2] <= -23 && object14b.rotasi[2] >= 23) {
+                    gerak_naik = false;
+                }
+            }  
+            else {
+                x = 0.15;
+                trans = 0.001;
+                if(object12b.rotasi[2] >= 0 && object14b.rotasi[2] <= 0) {
+                    gerak_naik = true;
+                }
+            }
+
+            object12b.rotateAll(0, 0, x);
+            object12b.translateAll(trans, 0, 0);
+            object12b.origin(0, 0, 0);
+            object14b.rotateAll(0, 0, -x);
+            object14b.translateAll(-trans, 0, 0);
+            object14b.origin(0, 0, 0);
+
 
             //kepala atas
             glMatrix.mat4.translate(object1b.MOVEMATRIX,object1b.MOVEMATRIX, [0.0, 0.2, 0.0]);
@@ -1173,9 +1193,9 @@ function main(){
             glMatrix.mat4.rotateY(object1b.child[10].MOVEMATRIX, object1b.child[10].MOVEMATRIX, LIBS.degToRad(29));
 
             //telinga kiri bawah
-            glMatrix.mat4.translate(object1b.child[11].MOVEMATRIX,object1b.child[11].MOVEMATRIX, [-1.225, 0.855, 0.0]);
+            glMatrix.mat4.translate(object1b.child[11].MOVEMATRIX,object1b.child[11].MOVEMATRIX, [-1.225, 0.865, 0.0]);
             glMatrix.mat4.rotateY(object1b.child[11].MOVEMATRIX, object1b.child[11].MOVEMATRIX, LIBS.degToRad(90));
-            glMatrix.mat4.rotateX(object1b.child[11].MOVEMATRIX, object1b.child[11].MOVEMATRIX, LIBS.degToRad(-131));
+            glMatrix.mat4.rotateX(object1b.child[11].MOVEMATRIX, object1b.child[11].MOVEMATRIX, LIBS.degToRad(-151));
             
             //telinga kanan atas
             glMatrix.mat4.translate(object1b.child[12].MOVEMATRIX,object1b.child[12].MOVEMATRIX, [1.23, 0.865, 0.0]);
@@ -1183,9 +1203,9 @@ function main(){
             glMatrix.mat4.rotateY(object1b.child[12].MOVEMATRIX, object1b.child[12].MOVEMATRIX, LIBS.degToRad(-29));
 
             //telinga kanan bawah
-            glMatrix.mat4.translate(object1b.child[13].MOVEMATRIX,object1b.child[13].MOVEMATRIX, [1.225, 0.855, 0.0]);
+            glMatrix.mat4.translate(object1b.child[13].MOVEMATRIX,object1b.child[13].MOVEMATRIX, [1.225, 0.865, 0.0]);
             glMatrix.mat4.rotateY(object1b.child[13].MOVEMATRIX, object1b.child[13].MOVEMATRIX, LIBS.degToRad(90));
-            glMatrix.mat4.rotateX(object1b.child[13].MOVEMATRIX, object1b.child[13].MOVEMATRIX, LIBS.degToRad(131));
+            glMatrix.mat4.rotateX(object1b.child[13].MOVEMATRIX, object1b.child[13].MOVEMATRIX, LIBS.degToRad(151));
 
             //lengan kiri
             glMatrix.mat4.translate(object1b.child[14].MOVEMATRIX,object1b.child[14].MOVEMATRIX, [-1.43, -0.7, 0.0]);
