@@ -792,11 +792,10 @@ function main(){
             }
 
             // tanah
-           
-            
-            // create set identity  (0,0,0) --> jd balek ke 0
-            object1a.MOVEMATRIX = glMatrix.mat4.create();
             tanah.MOVEMATRIX = glMatrix.mat4.create();
+            
+            //  object cinnamoroll create set identity  (0,0,0) --> jd balek ke 0
+            object1a.MOVEMATRIX = glMatrix.mat4.create(); 
             object1a.child[0].MOVEMATRIX = glMatrix.mat4.create();
             object1a.child[1].MOVEMATRIX = glMatrix.mat4.create();
             object1a.child[2].MOVEMATRIX = glMatrix.mat4.create();
