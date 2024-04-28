@@ -8,72 +8,77 @@ function normalizeScreen(x, y, width, height) {
     return [nx, ny];
   }
   
-  function generateBSpline(controlPoint, m, degree, zValues) {
+  function generateBSpline(controlPoint, m, degree, x1, y1, z1, r, g, b) { //titik "edge" kayak di AI
+    //m = jumlah titik dalam 1 garis
+    //degree = interpolasi/dimensi
     var curves = [];
-    var knotVector = [];
-  
-    var n = controlPoint.length / 2;
-  
+    var knotVector = []
+    var n = controlPoint.length/2;
+   
     // Calculate the knot values based on the degree and number of control points
-    for (var i = 0; i < n + degree + 1; i++) {
-      if (i < degree + 1) {
-        knotVector.push(0);
-      } else if (i >= n) {
-        knotVector.push(n - degree);
-      } else {
-        knotVector.push(i - degree);
-      }
-    }
-  
-    var basisFunc = function (i, j, t) {
-      if (j == 0) {
-        if (knotVector[i] <= t && t < knotVector[i + 1]) {
-          return 1;
+    for (var i = 0; i < n + degree+1; i++) {
+        if (i < degree + 1) {
+            knotVector.push(0);
+        } else if (i >= n) {
+            knotVector.push(n - degree);
         } else {
-          return 0;
+            knotVector.push(i - degree);
         }
-      }
-  
-      var den1 = knotVector[i + j] - knotVector[i];
-      var den2 = knotVector[i + j + 1] - knotVector[i + 1];
-  
-      var term1 = 0;
-      var term2 = 0;
-  
-      if (den1 != 0 && !isNaN(den1)) {
-        term1 = ((t - knotVector[i]) / den1) * basisFunc(i, j - 1, t);
-      }
-  
-      if (den2 != 0 && !isNaN(den2)) {
-        term2 = ((knotVector[i + j + 1] - t) / den2) * basisFunc(i + 1, j - 1, t);
-      }
-  
-      return term1 + term2;
-    };
-  
-    for (var t = 0; t < m; t++) {
+    }
+
+    var basisFunc = function(i,j,t){
+        if (j == 0){
+            if (knotVector[i] <= t && t < (knotVector[(i+1)])){ 
+              return 1;
+            } else{
+              return 0;
+            }
+        }
+   
+        var den1 = knotVector[i + j] - knotVector[i];
+        var den2 = knotVector[i + j + 1] - knotVector[i + 1];
+   
+        var term1 = 0;
+        var term2 = 0;
+   
+   
+        if (den1 != 0 && !isNaN(den1)) {
+          term1 = ((t - knotVector[i]) / den1) * basisFunc(i,j-1,t);
+        }
+   
+        if (den2 != 0 && !isNaN(den2)) {
+          term2 = ((knotVector[i + j + 1] - t) / den2) * basisFunc(i+1,j-1,t);
+        }
+   
+        return term1 + term2;
+    }
+   
+   
+    for(var t=0;t<m;t++){
       var x = 0;
       var y = 0;
-  
-      var u =
-        (t / m) * (knotVector[controlPoint.length / 2] - knotVector[degree]) +
-        knotVector[degree];
-  
+   
+      var u = (t/m * (knotVector[controlPoint.length/2] - knotVector[degree]) ) + knotVector[degree];
+   
       //C(t)
-      for (var key = 0; key < n; key++) {
-        var C = basisFunc(key, degree, u);
+      for(var key = 0;key<n;key++){
+   
+        var C = basisFunc(key,degree,u);
         //console.log(C);
-        x += controlPoint[key * 2] * C;
-        y += controlPoint[key * 2 + 1] * C;
-        //console.log(t + " " + degree + " " + x + " " + y + " " + C);
+        x += (controlPoint[key*2] * C);
+        y += (controlPoint[key*2+1] * C);
+        //console.log(t+" "+degree+" "+x+" "+y+" "+C);
       }
-      curves.push(x);
-      curves.push(y);
-      curves.push(zValues);
+      curves.push(x+x1);
+      curves.push(y+y1);
+      curves.push(z1);
+      curves.push(r);
+      curves.push(g);
+      curves.push(b);
     }
-    //console.log(curves);
+    console.log(curves)
     return curves;
-  }
+}
 class myObject{
 
      object_vertex = [];
@@ -160,26 +165,43 @@ class myObject{
         }
     }
 
-    draw(){
+    draw(obj_curve){
         GL.useProgram(this.SHADER_PROGRAM);
         GL.bindBuffer(GL.ARRAY_BUFFER,this.OBJECT_VERTEX);
         GL.vertexAttribPointer(this._position,3,GL.FLOAT,false,4*(3+3), 0);
         GL.vertexAttribPointer(this._color,3,GL.FLOAT,false,4*(3+3), 3*4);
         GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.OBJECT_FACES);
         GL.drawElements(GL.TRIANGLES,this.object_faces.length, GL.UNSIGNED_SHORT,0);
-        for(var i =0;i <this.child.length;i++){
-            this.child[i].draw();
+
+        for(var i = 0; i < this.child.length;i++){
+            for(var j = 0; j < obj_curve.length; j++) {
+                if(this.child[i] == obj_curve[j]) {
+                    this.child[i].drawCurves(obj_curve[j]);
+                }
+                else {
+                    this.child[i].draw(obj_curve[j]);
+                }
+            }
         }
     }
-    drawLine(){
+
+    drawCurves(obj_curve) {
         GL.useProgram(this.SHADER_PROGRAM);
-        GL.bindBuffer(GL.ARRAY_BUFFER,this.OBJECT_VERTEX);
-        GL.vertexAttribPointer(this._position,3,GL.FLOAT,false,4*(3+3), 0);
-        GL.vertexAttribPointer(this._color,3,GL.FLOAT,false,4*(3+3), 3*4);
+        GL.bindBuffer(GL.ARRAY_BUFFER, this.OBJECT_VERTEX);
+        GL.vertexAttribPointer(this._position, 3, GL.FLOAT, false, 4*(3+3), 0);
+        GL.vertexAttribPointer(this._color, 3, GL.FLOAT, false, 4*(3+3), 3*4);
         GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.OBJECT_FACES);
-        GL.drawElements(GL.LINE_STRIP,this.object_faces.length, GL.UNSIGNED_SHORT,0);
-        for(var i =0;i <this.child.length;i++){
-            this.child[i].drawLine();
+        GL.drawElements(GL.LINE_STRIP, this.object_faces.length, GL.UNSIGNED_SHORT, 0);
+        
+        for(var i = 0; i < this.child.length;i++){
+            for(var j = 0; j < obj_curve.length; j++) {
+                if(this.child[i] == obj_curve[j]) {
+                    this.child[i].drawCurves(obj_curve[j]);
+                }
+                else {
+                    this.child[i].draw(obj_curve[j]);
+                }
+            }
         }
     }
 
@@ -575,13 +597,20 @@ function main(){
     var mataKanan = Sphere(0.1,2,1.5,2,1,15/255,143/255,212/255);
 
     // BAGIAN MULUT 
-    var mulut = [0.01210389610389607 , 0.15243478260869568 
-        , 0.025974025974025983  , 0.12374581939799334];
-    var gambar = generateBSpline(mulut,100,2);
-    var faces = [];
-    for(var i =0; i < mulut.length; i++){
-        faces.push(i);
+    var curveMulut = [0.0, 0.15, 0.22, 0.0, 0.33, 0.1, 0.32,0.2];
+    var drawMulut = generateBSpline(curveMulut, 100, 2, 0, -0.3, 0.95, 15/255,143/255,212/255);
+    var faces1 =[];
+    for (let index = 0; index < drawMulut.length/6; index++) {
+        faces1.push(index);
     }
+    
+    curveMulut = [0.0, 0.15, -0.22, 0.0, -0.33, 0.1,-0.32,0.2];
+    var drawMulut1 = generateBSpline(curveMulut, 100, 2, 0, -0.3, 0.95, 15/255,143/255,212/255);
+    var faces2 =[];
+    for (let index = 0; index < drawMulut1.length/6; index++) {
+        faces2.push(index);
+    }
+
 
 
     // BAGIAN BADAN
@@ -604,53 +633,66 @@ function main(){
 
     // BAGIAN EKOR
     var ekor = Sphere(0.5,2,1,1,1.25,1,1,1);
-
-
-    var object1 = new myObject(kepalaBawah.object,kepalaBawah.objectface,shader_vertex_source,shader_fragment_source);
-    var object2 = new myObject(kepalaAtas.object,kepalaAtas.objectface,shader_vertex_source,shader_fragment_source);
-    var object3 = new myObject(mataKiri.object,mataKiri.objectface,shader_vertex_source,shader_fragment_source);
-    var object4 = new myObject(mataKanan.object,mataKanan.objectface,shader_vertex_source,shader_fragment_source);
-    var object5 = new myObject(badan.object,badan.objectface,shader_vertex_source,shader_fragment_source);
-
-    // topi
-    var object6 = new myObject(topi.circle_vertex,topi.circle_faces,shader_vertex_source,shader_fragment_source);
-    var object17 = new myObject(alasTopi.object,alasTopi.objectface,shader_vertex_source,shader_fragment_source);
-    var object18 = new myObject(pita.object,pita.objectface,shader_vertex_source,shader_fragment_source);
-
-    var object7 = new myObject(ekor.object,ekor.objectface,shader_vertex_source,shader_fragment_source);
-    var object8 = new myObject(telingakiri.object,telingakiri.objectface,shader_vertex_source,shader_fragment_source);
-    var object9 = new myObject(tangan.object,tangan.objectface,shader_vertex_source,shader_fragment_source);
-    var object10 = new myObject(telingaKanan.object,telingaKanan.objectface,shader_vertex_source,shader_fragment_source);
-    var object11 = new myObject(tangan.object,tangan.objectface,shader_vertex_source,shader_fragment_source);
-    var object12 = new myObject(kaki.object,kaki.objectface,shader_vertex_source,shader_fragment_source);
-    var object13 = new myObject(kaki.object,kaki.objectface,shader_vertex_source,shader_fragment_source);
-
-    // tongkat dan sapu 
-    var object14 = new myObject(tongkat.circle_vertex,tongkat.circle_faces,shader_vertex_source,shader_fragment_source);
-    var object15 = new myObject(sapu.circle_vertex,sapu.circle_faces,shader_vertex_source,shader_fragment_source);
-    var object16 = new myObject(sapuBawah.object,sapuBawah.objectface,shader_vertex_source,shader_fragment_source);
-    var object19 = new myObject(gambar,faces,shader_vertex_source,shader_fragment_source);
-
+    var curveEkor = [0.0, 0.0, 0.05, 0.05, 0.0, 0.1, -0.15,0.15, -0.2,0.05, -0.1, -0.05, -0.1,-0.1, 0.1, -0.08, 0.2, -0.05, 0.3, 0.05, 0.2, 0.2, 0.15, 0.25, 0.0,0.3, -0.1, 0.3, -0.2, 0.25, -0.3, 0.15, -0.3, 0.1 , -0.25, -0.1];
+    var drawEkor = generateBSpline(curveEkor, 100, 2, 0, -1.3, -1.5, 141/255, 177/255, 189/255);
+    var faces3 =[];
+    for (let index = 0; index < drawEkor.length/6; index++) {
+        faces3.push(index);
+    }
     
 
-    object1.addChild(object2); // 0
-    object1.addChild(object3); // 1
-    object1.addChild(object4); // 2
-    object1.addChild(object5); // 3
-    object1.addChild(object7); // 4
-    object1.addChild(object8); // 5
-    object1.addChild(object9); // 6
-    object1.addChild(object10); // 7
-    object1.addChild(object11); // 8
-    object1.addChild(object12); // 9
-    object1.addChild(object13); // 10
-    object1.addChild(object6); // 11
-    object1.addChild(object14); // 12
-    object1.addChild(object15); // 13
-    object1.addChild(object16); // 14
-    object1.addChild(object17); // 15
-    object1.addChild(object18); // 16
-   // object1.addChild(object19); // 17
+
+
+    var object1a = new myObject(kepalaBawah.object,kepalaBawah.objectface,shader_vertex_source,shader_fragment_source);
+    var object2a = new myObject(kepalaAtas.object,kepalaAtas.objectface,shader_vertex_source,shader_fragment_source);
+    var object3a = new myObject(mataKiri.object,mataKiri.objectface,shader_vertex_source,shader_fragment_source);
+    var object4a= new myObject(mataKanan.object,mataKanan.objectface,shader_vertex_source,shader_fragment_source);
+    var object5a = new myObject(badan.object,badan.objectface,shader_vertex_source,shader_fragment_source);
+
+    // topi
+    var object6a = new myObject(topi.circle_vertex,topi.circle_faces,shader_vertex_source,shader_fragment_source);
+    var object17a = new myObject(alasTopi.object,alasTopi.objectface,shader_vertex_source,shader_fragment_source);
+    var object18a = new myObject(pita.object,pita.objectface,shader_vertex_source,shader_fragment_source);
+
+    var object7a= new myObject(ekor.object,ekor.objectface,shader_vertex_source,shader_fragment_source);
+    var object8a = new myObject(telingakiri.object,telingakiri.objectface,shader_vertex_source,shader_fragment_source);
+    var object9a = new myObject(tangan.object,tangan.objectface,shader_vertex_source,shader_fragment_source);
+    var object10a = new myObject(telingaKanan.object,telingaKanan.objectface,shader_vertex_source,shader_fragment_source);
+    var object11a = new myObject(tangan.object,tangan.objectface,shader_vertex_source,shader_fragment_source);
+    var object12a = new myObject(kaki.object,kaki.objectface,shader_vertex_source,shader_fragment_source);
+    var object13a = new myObject(kaki.object,kaki.objectface,shader_vertex_source,shader_fragment_source);
+
+    // tongkat dan sapu 
+    var object14a = new myObject(tongkat.circle_vertex,tongkat.circle_faces,shader_vertex_source,shader_fragment_source);
+    var object15a = new myObject(sapu.circle_vertex,sapu.circle_faces,shader_vertex_source,shader_fragment_source);
+    var object16a = new myObject(sapuBawah.object,sapuBawah.objectface,shader_vertex_source,shader_fragment_source);
+    var object19a = new myObject(drawMulut,faces1,shader_vertex_source,shader_fragment_source);
+    var object20a = new myObject(drawMulut1,faces2,shader_vertex_source,shader_fragment_source);
+    var object21a = new myObject(drawEkor,faces3,shader_vertex_source,shader_fragment_source);
+    var mulutSemua = [];
+    mulutSemua.push(object19a,object20a,object21a);
+    
+
+    object1a.addChild(object2a); // 0
+    object1a.addChild(object3a); // 1
+    object1a.addChild(object4a); // 2
+    object1a.addChild(object5a); // 3
+    object1a.addChild(object7a); // 4
+    object1a.addChild(object8a); // 5
+    object1a.addChild(object9a); // 6
+    object1a.addChild(object10a); // 7
+    object1a.addChild(object11a); // 8
+    object1a.addChild(object12a); // 9
+    object1a.addChild(object13a); // 10
+    object1a.addChild(object6a); // 11
+    object1a.addChild(object14a); // 12
+    object1a.addChild(object15a); // 13
+    object1a.addChild(object16a); // 14
+    object1a.addChild(object17a); // 15
+    object1a.addChild(object18a); // 16
+    object1a.addChild(object19a); // 17
+    object1a.addChild(object20a); // 18
+    object1a.addChild(object21a); // 19
     
     
     //MATRIX
@@ -692,108 +734,113 @@ function main(){
             }
             
             // create set identity  (0,0,0) --> jd balek ke 0
-            object1.MOVEMATRIX = glMatrix.mat4.create();
-            object1.child[0].MOVEMATRIX = glMatrix.mat4.create();
-            object1.child[1].MOVEMATRIX = glMatrix.mat4.create();
-            object1.child[2].MOVEMATRIX = glMatrix.mat4.create();
-            object1.child[3].MOVEMATRIX = glMatrix.mat4.create();
-            object1.child[4].MOVEMATRIX = glMatrix.mat4.create();
-            object1.child[5].MOVEMATRIX = glMatrix.mat4.create();
-            object1.child[6].MOVEMATRIX = glMatrix.mat4.create();
-            object1.child[7].MOVEMATRIX = glMatrix.mat4.create();
-            object1.child[8].MOVEMATRIX = glMatrix.mat4.create();
-            object1.child[9].MOVEMATRIX = glMatrix.mat4.create();
-            object1.child[10].MOVEMATRIX = glMatrix.mat4.create();
-            object1.child[11].MOVEMATRIX = glMatrix.mat4.create();
-            object1.child[12].MOVEMATRIX = glMatrix.mat4.create();
-            object1.child[13].MOVEMATRIX = glMatrix.mat4.create();
-            object1.child[14].MOVEMATRIX = glMatrix.mat4.create();
-            object1.child[15].MOVEMATRIX = glMatrix.mat4.create();
-            object1.child[16].MOVEMATRIX = glMatrix.mat4.create();
+            object1a.MOVEMATRIX = glMatrix.mat4.create();
+            object1a.child[0].MOVEMATRIX = glMatrix.mat4.create();
+            object1a.child[1].MOVEMATRIX = glMatrix.mat4.create();
+            object1a.child[2].MOVEMATRIX = glMatrix.mat4.create();
+            object1a.child[3].MOVEMATRIX = glMatrix.mat4.create();
+            object1a.child[4].MOVEMATRIX = glMatrix.mat4.create();
+            object1a.child[5].MOVEMATRIX = glMatrix.mat4.create();
+            object1a.child[6].MOVEMATRIX = glMatrix.mat4.create();
+            object1a.child[7].MOVEMATRIX = glMatrix.mat4.create();
+            object1a.child[8].MOVEMATRIX = glMatrix.mat4.create();
+            object1a.child[9].MOVEMATRIX = glMatrix.mat4.create();
+            object1a.child[10].MOVEMATRIX = glMatrix.mat4.create();
+            object1a.child[11].MOVEMATRIX = glMatrix.mat4.create();
+            object1a.child[12].MOVEMATRIX = glMatrix.mat4.create();
+            object1a.child[13].MOVEMATRIX = glMatrix.mat4.create();
+            object1a.child[14].MOVEMATRIX = glMatrix.mat4.create();
+            object1a.child[15].MOVEMATRIX = glMatrix.mat4.create();
+            object1a.child[16].MOVEMATRIX = glMatrix.mat4.create();
+            object1a.child[17].MOVEMATRIX = glMatrix.mat4.create();
+            object1a.child[18].MOVEMATRIX = glMatrix.mat4.create();
+            object1a.child[19].MOVEMATRIX = glMatrix.mat4.create();
 
-            object1.rotateAll(THETA,PHI,0);
-            object1.rotateAll(LIBS.degToRad(-10),LIBS.degToRad(20),0);
+            object1a.rotateAll(THETA,PHI,0);
+            // object1.translateAll([2,0,0]);
+            object1a.rotateAll(LIBS.degToRad(-10),LIBS.degToRad(20),0);
 
             if (naik) {
-                y += langkah;
+                y += langkah; // kalau naik bertambah terus pergerakannya
                 if (y >= 2) { // Batas atas
                     naik = false; // Ubah arah pergerakan menjadi turun
+                    
                 }
             }
             // Pergerakan turun
             else {
-                y -= langkah;
+                y -= langkah; // kalau udh sampai atas bakal turun pergerakannya
                 if (y <= 0) { // Batas bawah
                     naik = true; // Ubah arah pergerakan menjadi naik
                 }
             }
         
-            // Terapkan perubahan posisi pada objek menggunakan translateAll
-            object1.translateAll([0, y, 0]);
-        
+            // Selalu update perubahan posisi objek pakai translateAll
+            object1a.translateAll([0, y, 0]);
+            
 
 
             // buat kepala bawah
-            glMatrix.mat4.translate(object1.MOVEMATRIX,object1.MOVEMATRIX, [0.0,0.0,0.0]);
+            glMatrix.mat4.translate(object1a.MOVEMATRIX,object1a.MOVEMATRIX, [0.0,0.0,0.0]);
             // buat kepala atas
-            glMatrix.mat4.translate(object1.child[0].MOVEMATRIX,object1.child[0].MOVEMATRIX, [0.0,0.0,0.0]);
+            glMatrix.mat4.translate(object1a.child[0].MOVEMATRIX,object1a.child[0].MOVEMATRIX, [0.0,0.0,0.0]);
             // buat mata kiri
-            glMatrix.mat4.translate(object1.child[1].MOVEMATRIX,object1.child[1].MOVEMATRIX, [-0.6,0.1,0.85]);
+            glMatrix.mat4.translate(object1a.child[1].MOVEMATRIX,object1a.child[1].MOVEMATRIX, [-0.6,0.1,0.85]);
             // buat mata kanan
-            glMatrix.mat4.translate(object1.child[2].MOVEMATRIX,object1.child[2].MOVEMATRIX, [0.6,0.1,0.85]);
+            glMatrix.mat4.translate(object1a.child[2].MOVEMATRIX,object1a.child[2].MOVEMATRIX, [0.6,0.1,0.85]);
             // buat badan
-            glMatrix.mat4.translate(object1.child[3].MOVEMATRIX,object1.child[3].MOVEMATRIX, [0.0,-1.0,0.0]);
+            glMatrix.mat4.translate(object1a.child[3].MOVEMATRIX,object1a.child[3].MOVEMATRIX, [0.0,-1.0,0.0]);
 
             // buat tangan kiri
-            glMatrix.mat4.translate(object1.child[6].MOVEMATRIX,object1.child[6].MOVEMATRIX, [-0.8,-0.6,0.5]);
-            glMatrix.mat4.rotateZ(object1.child[6].MOVEMATRIX, object1.child[6].MOVEMATRIX, LIBS.degToRad(55));
+            glMatrix.mat4.translate(object1a.child[6].MOVEMATRIX,object1a.child[6].MOVEMATRIX, [-1.0,-0.6,0.5]);
+            glMatrix.mat4.rotateZ(object1a.child[6].MOVEMATRIX, object1a.child[6].MOVEMATRIX, LIBS.degToRad(95));
 
             // buat tangan kanan
-            glMatrix.mat4.translate(object1.child[8].MOVEMATRIX,object1.child[8].MOVEMATRIX, [0.8,-0.6,0.5]);
-            glMatrix.mat4.rotateZ(object1.child[8].MOVEMATRIX, object1.child[8].MOVEMATRIX, LIBS.degToRad(-75));
+            glMatrix.mat4.translate(object1a.child[8].MOVEMATRIX,object1a.child[8].MOVEMATRIX, [0.8,-0.6,0.7]);
+            glMatrix.mat4.rotateZ(object1a.child[8].MOVEMATRIX, object1a.child[8].MOVEMATRIX, LIBS.degToRad(-65));
 
             // buat ekor
-            glMatrix.mat4.translate(object1.child[4].MOVEMATRIX,object1.child[4].MOVEMATRIX, [0.0,-1.2,-1.0]);
+            glMatrix.mat4.translate(object1a.child[4].MOVEMATRIX,object1a.child[4].MOVEMATRIX, [0.0,-1.2,-1.0]);
             // buat telinga kiri
-            glMatrix.mat4.translate(object1.child[5].MOVEMATRIX,object1.child[5].MOVEMATRIX, [-1.7,0.3,0.0]);
-            glMatrix.mat4.rotateZ(object1.child[5].MOVEMATRIX, object1.child[5].MOVEMATRIX, LIBS.degToRad(-65));
+            glMatrix.mat4.translate(object1a.child[5].MOVEMATRIX,object1a.child[5].MOVEMATRIX, [-2.0,0.3,0.0]);
+            glMatrix.mat4.rotateZ(object1a.child[5].MOVEMATRIX, object1a.child[5].MOVEMATRIX, LIBS.degToRad(-65));
             // telinga kanan 
-            glMatrix.mat4.translate(object1.child[7].MOVEMATRIX,object1.child[7].MOVEMATRIX, [1.7,0.3,0.0]);
-            glMatrix.mat4.rotateZ(object1.child[7].MOVEMATRIX, object1.child[7].MOVEMATRIX, LIBS.degToRad(65));
+            glMatrix.mat4.translate(object1a.child[7].MOVEMATRIX,object1a.child[7].MOVEMATRIX, [1.7,0.3,0.0]);
+            glMatrix.mat4.rotateZ(object1a.child[7].MOVEMATRIX, object1a.child[7].MOVEMATRIX, LIBS.degToRad(65));
 
             // buat kaki kiri
-            glMatrix.mat4.translate(object1.child[9].MOVEMATRIX,object1.child[9].MOVEMATRIX, [-0.7,-1.4,0.5]);
-            glMatrix.mat4.rotateZ(object1.child[9].MOVEMATRIX, object1.child[9].MOVEMATRIX, LIBS.degToRad(75));
+            glMatrix.mat4.translate(object1a.child[9].MOVEMATRIX,object1a.child[9].MOVEMATRIX, [-0.7,-1.4,0.5]);
+            glMatrix.mat4.rotateZ(object1a.child[9].MOVEMATRIX, object1a.child[9].MOVEMATRIX, LIBS.degToRad(75));
 
             // buat kaki kanan
-            glMatrix.mat4.translate(object1.child[10].MOVEMATRIX,object1.child[10].MOVEMATRIX, [0.7,-1.4,0.5]);
-            glMatrix.mat4.rotateZ(object1.child[10].MOVEMATRIX, object1.child[10].MOVEMATRIX, LIBS.degToRad(-75));
+            glMatrix.mat4.translate(object1a.child[10].MOVEMATRIX,object1a.child[10].MOVEMATRIX, [0.7,-1.4,0.5]);
+            glMatrix.mat4.rotateZ(object1a.child[10].MOVEMATRIX, object1a.child[10].MOVEMATRIX, LIBS.degToRad(-75));
 
             // buat topi
-            glMatrix.mat4.translate(object1.child[11].MOVEMATRIX,object1.child[11].MOVEMATRIX, [0.0,1.2,0.0]);
-            glMatrix.mat4.rotateX(object1.child[11].MOVEMATRIX, object1.child[11].MOVEMATRIX, LIBS.degToRad(-90));
-            glMatrix.mat4.translate(object1.child[15].MOVEMATRIX,object1.child[15].MOVEMATRIX, [0.0,0.98,0.0]);
-            glMatrix.mat4.rotateX(object1.child[15].MOVEMATRIX, object1.child[15].MOVEMATRIX, LIBS.degToRad(-90));
-            glMatrix.mat4.translate(object1.child[16].MOVEMATRIX,object1.child[16].MOVEMATRIX, [0.0,1.15,0.0]);
-            glMatrix.mat4.rotateX(object1.child[16].MOVEMATRIX, object1.child[16].MOVEMATRIX, LIBS.degToRad(-90));
+            glMatrix.mat4.translate(object1a.child[11].MOVEMATRIX,object1a.child[11].MOVEMATRIX, [0.0,1.2,0.0]);
+            glMatrix.mat4.rotateX(object1a.child[11].MOVEMATRIX, object1a.child[11].MOVEMATRIX, LIBS.degToRad(-90));
+            glMatrix.mat4.translate(object1a.child[15].MOVEMATRIX,object1a.child[15].MOVEMATRIX, [0.0,0.98,0.0]);
+            glMatrix.mat4.rotateX(object1a.child[15].MOVEMATRIX, object1a.child[15].MOVEMATRIX, LIBS.degToRad(-90));
+            glMatrix.mat4.translate(object1a.child[16].MOVEMATRIX,object1a.child[16].MOVEMATRIX, [0.0,1.15,0.0]);
+            glMatrix.mat4.rotateX(object1a.child[16].MOVEMATRIX, object1a.child[16].MOVEMATRIX, LIBS.degToRad(-90));
 
             // buat tongkat
-            glMatrix.mat4.translate(object1.child[12].MOVEMATRIX,object1.child[12].MOVEMATRIX, [0.8,-2.4,0.3]);
-            glMatrix.mat4.rotateX(object1.child[12].MOVEMATRIX, object1.child[12].MOVEMATRIX, LIBS.degToRad(-70));
-            glMatrix.mat4.rotateY(object1.child[12].MOVEMATRIX, object1.child[12].MOVEMATRIX, LIBS.degToRad(-45));
+            glMatrix.mat4.translate(object1a.child[12].MOVEMATRIX,object1a.child[12].MOVEMATRIX, [0.8,-2.4,0.3]);
+            glMatrix.mat4.rotateX(object1a.child[12].MOVEMATRIX, object1a.child[12].MOVEMATRIX, LIBS.degToRad(-70));
+            glMatrix.mat4.rotateY(object1a.child[12].MOVEMATRIX, object1a.child[12].MOVEMATRIX, LIBS.degToRad(-45));
             
             // buat sapu 
-            glMatrix.mat4.translate(object1.child[13].MOVEMATRIX,object1.child[13].MOVEMATRIX, [0.8,-2.4,0.3]);
-            glMatrix.mat4.rotateX(object1.child[13].MOVEMATRIX, object1.child[13].MOVEMATRIX, LIBS.degToRad(100));
-            glMatrix.mat4.rotateY(object1.child[13].MOVEMATRIX, object1.child[13].MOVEMATRIX, LIBS.degToRad(45));
+            glMatrix.mat4.translate(object1a.child[13].MOVEMATRIX,object1a.child[13].MOVEMATRIX, [0.8,-2.4,0.3]);
+            glMatrix.mat4.rotateX(object1a.child[13].MOVEMATRIX, object1a.child[13].MOVEMATRIX, LIBS.degToRad(100));
+            glMatrix.mat4.rotateY(object1a.child[13].MOVEMATRIX, object1a.child[13].MOVEMATRIX, LIBS.degToRad(45));
             
             // buat sapu bawah 
-            glMatrix.mat4.translate(object1.child[14].MOVEMATRIX,object1.child[14].MOVEMATRIX, [1.35,-2.9,0.2]);
-            glMatrix.mat4.rotateX(object1.child[14].MOVEMATRIX, object1.child[14].MOVEMATRIX, LIBS.degToRad(100));
-            glMatrix.mat4.rotateY(object1.child[14].MOVEMATRIX, object1.child[14].MOVEMATRIX, LIBS.degToRad(45));
+            glMatrix.mat4.translate(object1a.child[14].MOVEMATRIX,object1a.child[14].MOVEMATRIX, [1.35,-2.9,0.2]);
+            glMatrix.mat4.rotateX(object1a.child[14].MOVEMATRIX, object1a.child[14].MOVEMATRIX, LIBS.degToRad(100));
+            glMatrix.mat4.rotateY(object1a.child[14].MOVEMATRIX, object1a.child[14].MOVEMATRIX, LIBS.degToRad(45));
             
 
-            // glMatrix.mat4.rotateY(object1.child[11].MOVEMATRIX, object1.child[11].MOVEMATRIX, THETA);
+            // glMatrix.mat4.rotateY(object1a.child[11].MOVEMATRIX, object1.child[11].MOVEMATRIX, THETA);
             // glMatrix.mat4.rotateX(object1.child[11].MOVEMATRIX, object1.child[11].MOVEMATRIX, PHI);
             
             // let rot = glMatrix.quat.fromEuler(glMatrix.quat.create(), PHI, THETA, 0);
@@ -821,8 +868,8 @@ function main(){
 
         GL.viewport(0,0,CANVAS.width, CANVAS.height);
         GL.clear(GL.COLOR_BUFFER_BIT | GL.D_BUFFER_BIT);
-        object1.setUniform4(PROJMATRIX,VIEWMATRIX);
-        object1.draw();
+        object1a.setUniform4(PROJMATRIX,VIEWMATRIX);
+        object1a.draw(mulutSemua);
         GL.flush();
 
         window.requestAnimationFrame(animate);
