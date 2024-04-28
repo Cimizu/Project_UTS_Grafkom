@@ -79,6 +79,7 @@ function normalizeScreen(x, y, width, height) {
     console.log(curves)
     return curves;
 }
+
 class myObject{
     object_vertex = [];
     // ini bebas yang var tp GL hrs sama
@@ -215,17 +216,17 @@ class myObject{
         // tiap kali rotate juga anaknya draw anaknya juga
     }
 
-    rotateAll(THETA,PHI,R){
-        this.rotasi = [this.rotasi[0] + PHI, this.rotasi[1] + THETA, this.rotasi[0] + R];
+    rotateAll(PHI, THETA, R){
+        this.rotasi = [this.rotasi[0] + PHI, this.rotasi[1] + THETA, this.rotasi[2] + R];
         this.child.forEach(element => {
-            element.rotateAll(THETA,PHI,R)
+            element.rotateAll(PHI, THETA, R)
         });
     };
 
-    translateAll(a,b,c) {
+    translateAll(a, b, c) {
         this.translasi = [this.translasi[0] + a, this.translasi[1] + b, this.translasi[2] + c];
         this.child.forEach(element => {
-            element.translateAll(a,b,c);
+            element.translateAll(a, b, c);
         });
     };
 
@@ -237,10 +238,10 @@ class myObject{
     }
 
     origin(phi, theta, r) {
-        let rot = glMatrix.quat.fromEuler(glMatrix.quat.create(), this.rotasi[0] + phi, this.rotasi[1] + theta, this.rotasi[2] + r);
-        let trans = glMatrix.vec3.fromValues(this.translasi[0], this.translasi[1], this.translasi[2]);
-        let scale = glMatrix.vec3.fromValues(this.scale[0], this.scale[1], this.scale[2]);
-        let ori = glMatrix.vec3.fromValues(-this.translasi[0], -this.translasi[1], -this.translasi[2]);
+        var rot = glMatrix.quat.fromEuler(glMatrix.quat.create(), this.rotasi[0] + phi, this.rotasi[1] + theta, this.rotasi[2] + r);
+        var trans = glMatrix.vec3.fromValues(this.translasi[0], this.translasi[1], this.translasi[2]);
+        var scale = glMatrix.vec3.fromValues(this.scale[0], this.scale[1], this.scale[2]);
+        var ori = glMatrix.vec3.fromValues(-this.translasi[0], -this.translasi[1], -this.translasi[2]);
         glMatrix.mat4.fromRotationTranslationScaleOrigin(this.MOVEMATRIX, rot, trans, scale, ori);
         
         for(var i = 0; i < this.child.length; i++) {
