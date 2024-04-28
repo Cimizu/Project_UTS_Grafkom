@@ -611,7 +611,7 @@ function main(){
     }`;
     // ===================================================  ENVIRONMENT OBJECT ========================
     // BAGIAN BULAN
-    var bulan = Sphere(2.5,2,1,1,1,248/255, 253/255, 157/255);
+    var bulan = Sphere(2.5, 2, 1, 1, 1, 248/255, 253/255, 157/255);
     var pumpkin = Sphere(0.5,2,1,1,1,232/255, 138/255, 7/255);
     // BAGIAN TANAH 
         var triangle_vertex = [
@@ -919,7 +919,7 @@ function main(){
 
     var VIEWMATRIX = LIBS.get_I4();
 
-    LIBS.translateZ(VIEWMATRIX, -20); //untuk mundurin camera dan camera tidak menabrak dengan objeknya
+    LIBS.translateZ(VIEWMATRIX, -12); //untuk mundurin camera dan camera tidak menabrak dengan objeknya
 
     GL.clearColor(0.0, 0.0, 0.0, 0.0); //R, G, B, Opacity
 
@@ -934,6 +934,11 @@ function main(){
     let y = 0;
     let langkah = 0.03; // Kecepatan perubahan y
     let naik = true; // Menentukan apakah objek sedang naik atau turun
+
+    //POCHACCO ANIMATION
+    var x = 0;
+    var trans = 0;
+    var gerak_naik = true;
     
 
     var animate = function(time) {
