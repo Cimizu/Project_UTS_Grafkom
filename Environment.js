@@ -617,10 +617,10 @@ function main(){
     }`;
     // ===================================================  ENVIRONMENT OBJECT ========================
     // BAGIAN BULAN
-    var bulan = Sphere(2.5, 2, 1, 1, 1, 248/255, 253/255, 157/255);
+    var bulan = Sphere(2.5, 2, 0.5, 0.9, 1, 248/255, 253/255, 157/255);
     var pumpkin = Sphere(0.5,2,1,1,1,232/255, 138/255, 7/255);
     var pumpkinBesar = Sphere(1.0,2,1,1,1,232/255, 138/255, 7/255);
-    var grave = Sphere(0.5,1,1.5,2,1,66/255, 65/255, 63/255)
+    var grave = Sphere(0.5,2,1.5,2,1,66/255, 65/255, 63/255)
     var graveBesar = Sphere(1.0,2,1.5,2,1,69/255, 73/255, 61/255)
     // BAGIAN TANAH 
         var triangle_vertex = [
@@ -676,23 +676,197 @@ function main(){
         20, 21, 22,
         20, 22, 23
     ];
+
+    var triangle1_vertex = [
+    
+
+        -1, -6, -1,    77/255, 74/255, 74/255, 
+        1, -6, -1,    77/255, 74/255, 74/255, 
+        1,  6, -1,    77/255, 74/255, 74/255, 
+        -1,  6, -1,    77/255, 74/255, 74/255, 
+ 
+        -1, -6, 1,     77/255, 74/255, 74/255, 
+        1, -6, 1,     77/255, 74/255, 74/255, 
+        1,  6, 1,     77/255, 74/255, 74/255, 
+        -1,  6, 1,     77/255, 74/255, 74/255, 
+ 
+        -1, -6, -1,    77/255, 74/255, 74/255, 
+        -1,  6, -1,    77/255, 74/255, 74/255, 
+        -1,  6,  1,    77/255, 74/255, 74/255, 
+        -1, -6,  1,    77/255, 74/255, 74/255, 
+ 
+        1, -6, -1,     77/255, 74/255, 74/255, 
+        1,  6, -1,     77/255, 74/255, 74/255, 
+        1,  6,  1,     77/255, 74/255, 74/255, 
+        1, -6,  1,     77/255, 74/255, 74/255, 
+ 
+        -1, -6, -1,    77/255, 74/255, 74/255, 
+        -1, -6,  1,    77/255, 74/255, 74/255, 
+        1, -6,  1,    77/255, 74/255, 74/255, 
+        1, -6, -1,    77/255, 74/255, 74/255, 
+ 
+        -1, 6, -1,     77/255, 74/255, 74/255, 
+        -1, 6,  1,     77/255, 74/255, 74/255, 
+        1, 6,  1,     77/255, 74/255, 74/255, 
+        1, 6, -1,     77/255, 74/255, 74/255
+    ];
+
+var triangle1_elements = [
+    0, 1, 2,
+    0, 2, 4,
+
+    4, 5, 6,
+    4, 6, 7,
+
+    8, 9, 10,
+    8, 10, 11,
+
+    12, 13, 14,
+    12, 14, 15,
+
+    16, 17, 18,
+    16, 18, 19,
+
+    20, 21, 22,
+    20, 22, 23
+];
+
+var triangle2_vertex = [
+    
+
+    -6, -1, -5,    77/255, 74/255, 74/255, 
+    6, -1, -5,    77/255, 74/255, 74/255, 
+    6,  1, -5,    77/255, 74/255, 74/255, 
+    -6,  1, -5,    77/255, 74/255, 74/255, 
+
+    -6, -1, 5,     77/255, 74/255, 74/255, 
+    6, -1, 5,     77/255, 74/255, 74/255, 
+    6,  1, 5,     77/255, 74/255, 74/255, 
+    -6,  1, 5,     77/255, 74/255, 74/255, 
+
+    -6, -1, -5,    77/255, 74/255, 74/255, 
+    -6,  1, -5,    77/255, 74/255, 74/255, 
+    -6,  1,  5,    77/255, 74/255, 74/255, 
+    -6, -1,  5,    77/255, 74/255, 74/255, 
+
+    6, -1, -5,     77/255, 74/255, 74/255, 
+    6,  1, -5,     77/255, 74/255, 74/255, 
+    6,  1,  5,     77/255, 74/255, 74/255, 
+    6, -1,  5,     77/255, 74/255, 74/255, 
+
+    -6, -1, -5,    77/255, 74/255, 74/255, 
+    -6, -1,  5,    77/255, 74/255, 74/255, 
+    6, -1,  5,    77/255, 74/255, 74/255, 
+    6, -1, -5,    77/255, 74/255, 74/255, 
+
+    -6, 1, -5,     77/255, 74/255, 74/255, 
+    -6, 1,  5,     77/255, 74/255, 74/255, 
+    6, 1,  5,     77/255, 74/255, 74/255, 
+    6, 1, -5,     77/255, 74/255, 74/255
+];
+
+var triangle2_elements = [
+0, 1, 2,
+0, 2, 4,
+
+4, 5, 6,
+4, 6, 7,
+
+8, 9, 10,
+8, 10, 11,
+
+12, 13, 14,
+12, 14, 15,
+
+16, 17, 18,
+16, 18, 19,
+
+20, 21, 22,
+20, 22, 23
+];
+
+var triangle3_vertex = [
+    
+
+    -2, -1, -2,    77/255, 74/255, 74/255, 
+    2, -1, -2,    77/255, 74/255, 74/255, 
+    2,  1, -2,    77/255, 74/255, 74/255, 
+    -2,  1, -5,    77/255, 74/255, 74/255, 
+
+    -2, -1, 2,     77/255, 74/255, 74/255, 
+    2, -1, 2,     77/255, 74/255, 74/255, 
+    2,  1, 2,     77/255, 74/255, 74/255, 
+    -2,  1, 2,     77/255, 74/255, 74/255, 
+
+    -2, -1, -2,    77/255, 74/255, 74/255, 
+    -2,  1, -2,    77/255, 74/255, 74/255, 
+    -2,  1,  2,    77/255, 74/255, 74/255, 
+    -2, -1,  2,    77/255, 74/255, 74/255, 
+
+    2, -1, -2,     77/255, 74/255, 74/255, 
+    2,  1, -2,     77/255, 74/255, 74/255, 
+    2,  1,  2,     77/255, 74/255, 74/255, 
+    2, -1,  2,     77/255, 74/255, 74/255, 
+
+    -2, -1, -2,    77/255, 74/255, 74/255, 
+    -2, -1,  2,    77/255, 74/255, 74/255, 
+    2, -1,  2,    77/255, 74/255, 74/255, 
+    2, -1, -2,    77/255, 74/255, 74/255, 
+
+    -2, 1, -2,     77/255, 74/255, 74/255, 
+    -2, 1,  2,     77/255, 74/255, 74/255, 
+    2, 1,  2,     77/255, 74/255, 74/255, 
+    2, 1, -2,     77/255, 74/255, 74/255
+];
+
+var triangle3_elements = [
+0, 1, 2,
+0, 2, 4,
+
+4, 5, 6,
+4, 6, 7,
+
+8, 9, 10,
+8, 10, 11,
+
+12, 13, 14,
+12, 14, 15,
+
+16, 17, 18,
+16, 18, 19,
+
+20, 21, 22,
+20, 22, 23
+];
     var tanah = new myObject (triangle_vertex, triangle_elements,shader_vertex_source, shader_fragment_source);
     var bulanKembangKempis = new myObject(bulan.object,bulan.objectface,shader_vertex_source,shader_fragment_source);
     var pumpkin1 = new myObject(pumpkin.object,pumpkin.objectface,shader_vertex_source,shader_fragment_source);
     var pumpkinBesar1 = new myObject(pumpkinBesar.object,pumpkinBesar.objectface,shader_vertex_source,shader_fragment_source);
     var grave2 = new myObject (grave.object,grave.objectface,shader_vertex_source,shader_fragment_source);
+    var pumpkin3 = new myObject(pumpkin.object,pumpkin.objectface,shader_vertex_source,shader_fragment_source);
     var graveBesar2 = new myObject (graveBesar.object,graveBesar.objectface,shader_vertex_source,shader_fragment_source);
     var grave3 = new myObject (grave.object,grave.objectface,shader_vertex_source,shader_fragment_source);
     var grave4 = new myObject (grave.object,grave.objectface,shader_vertex_source,shader_fragment_source);
     var grave5 = new myObject (grave.object,grave.objectface,shader_vertex_source,shader_fragment_source);
     var grave6 = new myObject(graveBesar.object,graveBesar.objectface,shader_vertex_source,shader_fragment_source);
     var pumpkin2 = new myObject(pumpkin.object,pumpkin.objectface,shader_vertex_source,shader_fragment_source);
+    var bangunan = new myObject (triangle1_vertex, triangle1_elements,shader_vertex_source, shader_fragment_source);
+    var bangunan2 = new myObject (triangle1_vertex, triangle1_elements,shader_vertex_source, shader_fragment_source);
+    var bangunan3 = new myObject (triangle2_vertex, triangle2_elements,shader_vertex_source, shader_fragment_source);
+    var bangunan4 = new myObject (triangle3_vertex, triangle3_elements,shader_vertex_source, shader_fragment_source);
+    var bangunan5 = new myObject (triangle3_vertex, triangle3_elements,shader_vertex_source, shader_fragment_source);
     grave2.addChild(graveBesar2);
     grave2.addChild(grave3);
     grave2.addChild(grave4);
     grave2.addChild(grave5);
     grave2.addChild(grave6);
     pumpkin1.addChild(pumpkin2);
+    pumpkin1.addChild(pumpkin3);
+    bangunan.addChild(bangunan2);
+    bangunan.addChild(bangunan3);
+    bangunan.addChild(bangunan4);
+    bangunan.addChild(bangunan5);
+
     var simpan = [];
 
 
@@ -938,11 +1112,11 @@ function main(){
 
 
     //MATRIX
-    var PROJMATRIX = LIBS.get_projection(100, CANVAS.width/CANVAS.height,1, 100);
+    var PROJMATRIX = LIBS.get_projection(110, CANVAS.width/CANVAS.height,1, 100);
 
     var VIEWMATRIX = LIBS.get_I4();
 
-    LIBS.translateZ(VIEWMATRIX, -15); //untuk mundurin camera dan camera tidak menabrak dengan objeknya
+    LIBS.translateZ(VIEWMATRIX, -10); //untuk mundurin camera dan camera tidak menabrak dengan objeknya
 
     GL.clearColor(0.0, 0.0, 0.0, 0.0); //R, G, B, Opacity
 
@@ -985,6 +1159,7 @@ function main(){
             bulanKembangKempis.MOVEMATRIX = glMatrix.mat4.create();
             pumpkin1.MOVEMATRIX = glMatrix.mat4.create();
             pumpkin1.child[0].MOVEMATRIX = glMatrix.mat4.create();
+            pumpkin1.child[1].MOVEMATRIX = glMatrix.mat4.create();
             pumpkinBesar1.MOVEMATRIX = glMatrix.mat4.create();
             grave2.MOVEMATRIX = glMatrix.mat4.create();
             grave2.child[0].MOVEMATRIX = glMatrix.mat4.create();
@@ -992,6 +1167,11 @@ function main(){
             grave2.child[2].MOVEMATRIX = glMatrix.mat4.create();
             grave2.child[3].MOVEMATRIX = glMatrix.mat4.create();
             grave2.child[4].MOVEMATRIX = glMatrix.mat4.create();
+            bangunan.MOVEMATRIX = glMatrix.mat4.create();
+            bangunan.child[0].MOVEMATRIX = glMatrix.mat4.create();
+            bangunan.child[1].MOVEMATRIX = glMatrix.mat4.create();
+            bangunan.child[2].MOVEMATRIX = glMatrix.mat4.create();
+            bangunan.child[3].MOVEMATRIX = glMatrix.mat4.create();
             
 
            // tanah.rotateAll(THETA,PHI,0);
@@ -1017,14 +1197,20 @@ function main(){
             glMatrix.mat4.translate(tanah.MOVEMATRIX,tanah.MOVEMATRIX, [0.0,-6.0,-7.0]);
             glMatrix.mat4.translate(pumpkin1.MOVEMATRIX,pumpkin1.MOVEMATRIX, [-4.0,-2.0,0.0]);
             glMatrix.mat4.translate(pumpkin1.child[0].MOVEMATRIX,pumpkin1.child[0].MOVEMATRIX, [-5.0,-2.0,2.0]);
-            glMatrix.mat4.translate(bulanKembangKempis.MOVEMATRIX,bulanKembangKempis.MOVEMATRIX, [-5.0,9.0,0.0]);
+            glMatrix.mat4.translate(pumpkin1.child[1].MOVEMATRIX,pumpkin1.child[1].MOVEMATRIX, [3.0,-2.0,2.0]);
+            glMatrix.mat4.translate(bulanKembangKempis.MOVEMATRIX,bulanKembangKempis.MOVEMATRIX, [-5.0,13.0,0.0]);
             glMatrix.mat4.translate(pumpkinBesar1.MOVEMATRIX,pumpkinBesar1.MOVEMATRIX, [-8.0,-2.0,-1.0]);
-            glMatrix.mat4.translate(grave2.MOVEMATRIX,grave2.MOVEMATRIX, [8.0,-2.0,1.0]);
+            glMatrix.mat4.translate(grave2.MOVEMATRIX,grave2.MOVEMATRIX, [8.0,-2.5,-1.0]);
             glMatrix.mat4.translate(grave2.child[0].MOVEMATRIX,grave2.child[0].MOVEMATRIX, [10.0,-2.0,1.0]);
-            glMatrix.mat4.translate(grave2.child[1].MOVEMATRIX,grave2.child[1].MOVEMATRIX, [12.0,-2.0,1.0]);
-            glMatrix.mat4.translate(grave2.child[2].MOVEMATRIX,grave2.child[2].MOVEMATRIX, [-10.0,-2.0,1.0]);
-            glMatrix.mat4.translate(grave2.child[3].MOVEMATRIX,grave2.child[3].MOVEMATRIX, [-12.0,-2.0,1.0]);
+            glMatrix.mat4.translate(grave2.child[1].MOVEMATRIX,grave2.child[1].MOVEMATRIX, [15.0,-2.5,1.0]);
+            glMatrix.mat4.translate(grave2.child[2].MOVEMATRIX,grave2.child[2].MOVEMATRIX, [-10.0,-2.5,1.0]);
+            glMatrix.mat4.translate(grave2.child[3].MOVEMATRIX,grave2.child[3].MOVEMATRIX, [-12.0,-2.5,5.0]);
             glMatrix.mat4.translate(grave2.child[4].MOVEMATRIX,grave2.child[4].MOVEMATRIX, [-15.0,-2.0,0.0]);
+            glMatrix.mat4.translate(bangunan.MOVEMATRIX,bangunan.MOVEMATRIX, [6.0,2.0,-6.0]);
+            glMatrix.mat4.translate(bangunan.child[0].MOVEMATRIX,bangunan.child[0].MOVEMATRIX, [-6.0,2.0,-6.0]);
+            glMatrix.mat4.translate(bangunan.child[1].MOVEMATRIX,bangunan.child[1].MOVEMATRIX, [0.0,7.0,-6.0]);
+            glMatrix.mat4.translate(bangunan.child[2].MOVEMATRIX,bangunan.child[2].MOVEMATRIX, [-6.0,-2.0,-6.0]);
+            glMatrix.mat4.translate(bangunan.child[3].MOVEMATRIX,bangunan.child[3].MOVEMATRIX, [6.0,-2.0,-6.0]);
 
 
 
@@ -1322,6 +1508,8 @@ function main(){
         pumpkinBesar1.draw(mulutSemua);
         grave2.setUniform4(PROJMATRIX,VIEWMATRIX);
         grave2.draw(mulutSemua);
+        bangunan.setUniform4(PROJMATRIX,VIEWMATRIX);
+        bangunan.draw(mulutSemua);
         GL.flush();
 
         window.requestAnimationFrame(animate);
