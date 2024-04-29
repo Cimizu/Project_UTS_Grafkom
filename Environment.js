@@ -216,6 +216,14 @@ class myObject{
         // tiap kali rotate juga anaknya draw anaknya juga
     }
 
+    addScale(s) {
+        var hasil = this.scale[0] + s;
+        this.scale[2] = hasil;
+        this.child.forEach(element => {
+            element.addScale(s)
+        });
+    }
+
     rotateAll(PHI, THETA, R){
         this.rotasi = [this.rotasi[0] + PHI, this.rotasi[1] + THETA, this.rotasi[2] + R];
         this.child.forEach(element => {
@@ -231,7 +239,7 @@ class myObject{
     };
 
     scalingAll(c) {
-        this.translasi = [this.scale[0] * c, this.scale[1] * c, this.scale[2] * c];
+        this.translasi = [this.scale[0] + c, this.scale[1] + c, this.scale[2] + c];
         this.child.forEach(element => {
             element.translateAll(c);
         });
@@ -1136,9 +1144,10 @@ var triangle3_elements = [
 
     //POCHACCO ANIMATION
     var x = 0;
+    var z = 0;
     var trans = 0;
     var gerak_naik = true;
-    var pindah = false;
+    var s = false;
 
     var animate = function(time) {
         if(time > 0) {
@@ -1178,24 +1187,28 @@ var triangle3_elements = [
             
 
            // tanah.rotateAll(THETA,PHI,0);
-            bulanKembangKempis.origin(-4.0,1.0,0.0);
 
-            //  if (naik) {
-                y *= 0.09; 
-                 if (bulanKembangKempis.scale[0] >= 2 && bulanKembangKempis.scale[1] >= 2 && bulanKembangKempis.scale[2] >= 2   ) { // Batas atas
-                     naik = false; 
-                 }
-         //    }
+            if (!s) {
+                y += 0.01; 
+                if (bulanKembangKempis.scale[0] >= 1.5 && bulanKembangKempis.scale[1] >= 1.5 && bulanKembangKempis.scale[2] >= 1.5) { // Batas atas
+                    s = true; 
+                }
+            }
              //Pergerakan turun
-            //  else {
-                 y /= -0.09; 
-                 if (bulanKembangKempis.scale[0] <=0 && bulanKembangKempis.scale[1] >= 2 && bulanKembangKempis.scale[2] >= 2  ) { // Batas bawah
-                     naik = true; 
-                 }
-          //   }
+            else {
+                y += -0.01;
+                if (bulanKembangKempis.scale[0] <= 1 && bulanKembangKempis.scale[1] <= 1 && bulanKembangKempis.scale[2] <= 1) { // Batas bawah
+                    s = false; 
+                }
+            }
          
              // // Selalu update perubahan posisi objek pakai translateAll
-            bulanKembangKempis.scalingAll(y);
+            bulanKembangKempis.addScale(y);
+            bulanKembangKempis.origin(-4.0,1.0,0.0);
+
+            pumpkin1.addScale(y);
+            pumpkinBesar1.addScale(y);
+            pumpkin1.origin(0, 0, 0);
 
             glMatrix.mat4.translate(tanah.MOVEMATRIX,tanah.MOVEMATRIX, [0.0,-6.0,-7.0]);
             glMatrix.mat4.translate(pumpkin1.MOVEMATRIX,pumpkin1.MOVEMATRIX, [-4.0,-2.0,0.0]);
@@ -1264,7 +1277,7 @@ var triangle3_elements = [
             // // Selalu update perubahan posisi objek pakai translateAll
             //object1a.rotateAll(LIBS.degToRad(60),0,0);
 
-             object1a.translateAll(0,y,0);
+            object1a.translateAll(0,y,0);
             
 
 
@@ -1371,7 +1384,6 @@ var triangle3_elements = [
             object1b.child[24].MOVEMATRIX = glMatrix.mat4.create();
             object1b.child[25].MOVEMATRIX = glMatrix.mat4.create();
 
-            
             if (gerak_naik) {
                 x = -0.15;
                 trans = -0.001;
