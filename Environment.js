@@ -1118,8 +1118,107 @@ var triangle3_elements = [
     object1b.addChild(scar4);
 
     // ======================================= KERROPI OBJECT =======================================
+     // BAGIAN KEPALA
+    //  Sphere(rad,sector,a,b,c, red,green,blue )
+    var kepalaAtas = Sphere(0.3, 2, 1, 0.86, 1.3, 0, 1, 0);
+    var kepalaBawah = Sphere(0.3, 2, 2, 1.5, 2, 0, 1, 0);
+
+    // BAGIAN MATA
+    var mataKiriAtas = Sphere(0.15, 1, 1, 1, 1, 1, 1, 1);
+    var mataKiriBawah = Sphere(0.15, 2, 1, 1, 1, 1, 1, 1);
+    var mataKananAtas = Sphere(0.15, 1, 1, 1, 1, 1, 1, 1);
+    var mataKananBawah = Sphere(0.15, 2, 1, 1, 1, 1, 1, 1);
+    var mataKananHitam = Sphere(0.05, 2, 1, 1, 1, 0, 0, 0);
+    var mataKiriHitam = Sphere(0.05, 2, 1, 1, 1, 0, 0, 0);
+
+    // BAGIAN MULUT
+
+    
+
+    // BAGIAN BADAN
+    var badan = tabung(0.5, 0.5, 0.8, 0, 1, 0);
+
+    // BAGIAN TANGAN KIRI
+    // Kerucut (rad, length, red, green, blue)
+    var tanganKiriAtas = Sphere(0.15, 1, 1, 1, 1.25, 0, 1, 0);
+    var tanganKiriBawah = Sphere(0.15, 2, 1, 1, 1.25, 0, 1, 0);
+    var jariKiri1 = kerucut(0.05, 0.07, 0, 1, 0, 0, 1, 0);
+    var jariKiri2 = kerucut(0.05, 0.07, 0, 1, 0, 0, 1, 0);
+    var jariKiri3 = kerucut(0.05, 0.07, 0, 1, 0, 0, 1, 0);
+    
+
+    //BAGIAN TANGAN KANAN
+    var tanganKananAtas = Sphere(0.15, 1, 1, 1, 1.25, 0, 1, 0);
+    var tanganKananBawah = Sphere(0.15, 2, 1, 1, 1.25, 0, 1, 0);
+    var jariKanan1 = kerucut(0.05, 0.07, 0, 1, 0, 0, 1, 0);
+    var jariKanan2 = kerucut(0.05, 0.07, 0, 1, 0, 0, 1, 0);
+    var jariKanan3 = kerucut(0.05, 0.07, 0, 1, 0, 0, 1, 0);
+
+    //BAGIAN KAKI KANAN
+    var kakiKananAtas = Sphere(0.2, 2, 1.2, 1, 1.5, 0, 1, 1);
+    var kakiKananBawah = Sphere(0.2, 2, 1.2, 1, 1.5, 0, 1, 1);
+
+    //BAGIAN KAKI KIRI
+    var kakiKiriAtas = Sphere(0.2, 2, 1.2, 1, 1.5, 0, 1, 1);
+    var kakiKiriBawah = Sphere(0.2, 2, 1.2, 1, 1.5, 0, 1, 1);
+
+    var object1 = new myObject(kepalaAtas.object,kepalaAtas.objectface,shader_vertex_source,shader_fragment_source);
+    var object2 = new myObject(kepalaBawah.object,kepalaBawah.objectface,shader_vertex_source,shader_fragment_source);
+
+    var object3 = new myObject(mataKiriAtas.object,mataKiriAtas.objectface,shader_vertex_source,shader_fragment_source);
+    var object4 = new myObject(mataKiriBawah.object,mataKiriBawah.objectface,shader_vertex_source,shader_fragment_source);
+
+    var object5 = new myObject(mataKananAtas.object,mataKananAtas.objectface,shader_vertex_source,shader_fragment_source);
+    var object6 = new myObject(mataKananBawah.object,mataKananBawah.objectface,shader_vertex_source,shader_fragment_source);
+
+    var object7 = new myObject(jariKiri1.circle_vertex, jariKiri1.circle_faces, shader_vertex_source, shader_fragment_source);
+    var object8 = new myObject(jariKiri2.circle_vertex, jariKiri2.circle_faces, shader_vertex_source, shader_fragment_source);
+    var object9 = new myObject(jariKiri3.circle_vertex, jariKiri3.circle_faces, shader_vertex_source, shader_fragment_source);
+
+    var object10 = new myObject(tanganKiriAtas.object, tanganKiriAtas.objectface, shader_vertex_source, shader_fragment_source);
+    var object20 = new myObject(tanganKiriBawah.object, tanganKiriBawah.objectface, shader_vertex_source, shader_fragment_source);
+
+    var object11 = new myObject(jariKanan1.circle_vertex, jariKanan1.circle_faces, shader_vertex_source, shader_fragment_source);
+    var object12 = new myObject(jariKanan2.circle_vertex, jariKanan2.circle_faces, shader_vertex_source, shader_fragment_source);
+    var object13 = new myObject(jariKanan3.circle_vertex, jariKanan3.circle_faces, shader_vertex_source, shader_fragment_source);
+
+    var object14 = new myObject(tanganKananAtas.object, tanganKananAtas.objectface, shader_vertex_source, shader_fragment_source);
+    var object21 = new myObject(tanganKananBawah.object, tanganKananBawah.objectface, shader_vertex_source, shader_fragment_source);
+
+    var object15 = new myObject(mataKananHitam.object, mataKananHitam.objectface,shader_vertex_source,shader_fragment_source);
+    var object16 = new myObject(mataKiriHitam.object, mataKiriHitam.objectface,shader_vertex_source,shader_fragment_source);
+
+    var object17 = new myObject(badan.circle_vertex, badan.circle_faces,shader_vertex_source,shader_fragment_source);
+
+    var object18 = new myObject(kakiKananAtas.object, kakiKananAtas.objectface, shader_vertex_source, shader_fragment_source);
+    var object19 = new myObject(kakiKananBawah.object, kakiKananBawah.objectface, shader_vertex_source, shader_fragment_source);
+    var object22 = new myObject(kakiKiriAtas.object, kakiKiriAtas.objectface, shader_vertex_source, shader_fragment_source);
+    var object23 = new myObject(kakiKiriBawah.object, kakiKiriBawah.objectface, shader_vertex_source, shader_fragment_source);
 
 
+    object1.addChild(object2); //0
+    object1.addChild(object3); //1
+    object1.addChild(object4); //2
+    object1.addChild(object5); //3
+    object1.addChild(object6); //4
+    object1.addChild(object15);  //5
+    object1.addChild(object16);  //6 
+    object1.addChild(object17);  //7
+    object1.addChild(object18);  //8
+    object1.addChild(object19);  //9
+    object1.addChild(object22);  //10
+    object1.addChild(object23);  //11
+    
+    object10.addChild(object7);  //0
+    object10.addChild(object8);  //1
+    object10.addChild(object9);  //2
+    object10.addChild(object20)  //3
+
+    object14.addChild(object11);  //0
+    object14.addChild(object12);  //1
+    object14.addChild(object13);  //2
+    object14.addChild(object21)  //3
+    
 
     //MATRIX
     var PROJMATRIX = LIBS.get_projection(110, CANVAS.width/CANVAS.height,1, 100);
@@ -1504,6 +1603,110 @@ var triangle3_elements = [
             glMatrix.mat4.translate(object1b.child[21].MOVEMATRIX,object1b.child[21].MOVEMATRIX, [0.0, -1.95, -1.55]);
             glMatrix.mat4.rotateX(object1b.child[21].MOVEMATRIX, object1b.child[21].MOVEMATRIX, LIBS.degToRad(-180));
 
+            //==========================================KERROPI=========================================
+            object1.MOVEMATRIX = glMatrix.mat4.create();
+            object1.child[0].MOVEMATRIX = glMatrix.mat4.create();
+            object1.child[1].MOVEMATRIX = glMatrix.mat4.create();
+            object1.child[2].MOVEMATRIX = glMatrix.mat4.create();
+            object1.child[3].MOVEMATRIX = glMatrix.mat4.create();
+            object1.child[4].MOVEMATRIX = glMatrix.mat4.create();
+            object1.child[5].MOVEMATRIX = glMatrix.mat4.create();
+            object1.child[6].MOVEMATRIX = glMatrix.mat4.create();
+            object1.child[7].MOVEMATRIX = glMatrix.mat4.create();
+            object1.child[8].MOVEMATRIX = glMatrix.mat4.create();
+            object1.child[10].MOVEMATRIX = glMatrix.mat4.create();
+            object10.MOVEMATRIX = glMatrix.mat4.create();
+            object10.child[3].MOVEMATRIX = glMatrix.mat4.create();
+            object10.child[0].MOVEMATRIX = glMatrix.mat4.create();
+            object10.child[1].MOVEMATRIX = glMatrix.mat4.create();
+            object10.child[2].MOVEMATRIX = glMatrix.mat4.create();
+            object14.child[3].MOVEMATRIX = glMatrix.mat4.create();
+            object14.child[0].MOVEMATRIX = glMatrix.mat4.create();
+            object14.child[1].MOVEMATRIX = glMatrix.mat4.create();
+            object14.child[2].MOVEMATRIX = glMatrix.mat4.create();
+
+            glMatrix.mat4.translate(object1.MOVEMATRIX,object1.MOVEMATRIX, [-8.0,0.0,0.0]);
+
+            //kepala bawah
+            glMatrix.mat4.translate(object1.child[0].MOVEMATRIX, object1.child[0].MOVEMATRIX, [-8.0,0.2,0.0]);
+
+            //mata kiri atas
+            glMatrix.mat4.translate(object1.child[1].MOVEMATRIX, object1.child[1].MOVEMATRIX, [-8.17, 0.6, 0.4]);
+
+            //mata kiri bawah
+            glMatrix.mat4.translate(object1.child[2].MOVEMATRIX, object1.child[2].MOVEMATRIX, [-8.17, 0.6, 0.4]);
+
+            //mata kanan atas
+            glMatrix.mat4.translate(object1.child[3].MOVEMATRIX, object1.child[3].MOVEMATRIX, [-0.17, 0.6, 0.4]);
+            glMatrix.mat4.translate(object1.child[3].MOVEMATRIX, object1.child[3].MOVEMATRIX, [-8, 0.0, 0.0]);
+
+            //mata kanan bawah
+            glMatrix.mat4.translate(object1.child[4].MOVEMATRIX, object1.child[4].MOVEMATRIX, [-0.17, 0.6, 0.4]);
+            glMatrix.mat4.translate(object1.child[4].MOVEMATRIX, object1.child[4].MOVEMATRIX, [-8, 0.0, 0.0]);
+
+            //mata kanan hitam
+            glMatrix.mat4.translate(object1.child[5].MOVEMATRIX, object1.child[5].MOVEMATRIX, [-8.17, 0.6, 0.6]);
+
+            //mata kiri hitam
+            glMatrix.mat4.translate(object1.child[6].MOVEMATRIX, object1.child[6].MOVEMATRIX, [-0.17, 0.6, 0.6]);
+            glMatrix.mat4.translate(object1.child[6].MOVEMATRIX, object1.child[6].MOVEMATRIX, [-8, 0.0, 0.0]);
+
+            //badan
+            glMatrix.mat4.translate(object1.child[7].MOVEMATRIX, object1.child[7].MOVEMATRIX, [-8.0, -0.7, -0.4]);
+
+            //kaki kanan atas
+            glMatrix.mat4.translate(object1.child[8].MOVEMATRIX, object1.child[8].MOVEMATRIX, [-8.7,-1.2,0.0]);
+            
+            // //kaki kanan bawah
+            // object1.child[9].MOVEMATRIX = glMatrix.mat4.create();
+            // glMatrix.mat4.rotateY(object1.child[9].MOVEMATRIX, object1.child[9].MOVEMATRIX, THETA);
+            // glMatrix.mat4.rotateX(object1.child[9].MOVEMATRIX, object1.child[9].MOVEMATRIX, PHI);
+            // glMatrix.mat4.translate(object1.child[9].MOVEMATRIX, object1.child[9].MOVEMATRIX, [0.7,-1.2,-0.4]);
+            
+            //kaki kiri atas
+            glMatrix.mat4.translate(object1.child[10].MOVEMATRIX, object1.child[10].MOVEMATRIX, [-0.7,-1.2,0.0]);
+            glMatrix.mat4.translate(object1.child[10].MOVEMATRIX, object1.child[10].MOVEMATRIX, [-8, 0.0, 0.0]);
+            
+            // //kaki kiri bawah
+            // object1.child[11].MOVEMATRIX = glMatrix.mat4.create();
+            // glMatrix.mat4.rotateY(object1.child[11].MOVEMATRIX, object1.child[11].MOVEMATRIX, THETA);
+            // glMatrix.mat4.rotateX(object1.child[11].MOVEMATRIX, object1.child[11].MOVEMATRIX, PHI);
+            // glMatrix.mat4.translate(object1.child[11].MOVEMATRIX, object1.child[11].MOVEMATRIX, [-1.0,-1.2,-0.4]);
+
+            //tangan kiri atas
+            glMatrix.mat4.translate(object10.MOVEMATRIX, object10.MOVEMATRIX, [-0.6,-0.4,0.5]);
+            glMatrix.mat4.translate(object10.MOVEMATRIX, object10.MOVEMATRIX, [-8, 0.0, 0.0]);
+
+            //tangan kiri bawah
+            glMatrix.mat4.translate(object10.child[3].MOVEMATRIX, object10.child[3].MOVEMATRIX, [-0.6,-0.4,0.5]);
+            glMatrix.mat4.translate(object10.child[3].MOVEMATRIX, object1.child[3].MOVEMATRIX, [-8, 0.0, 0.0]);
+            //jari kiri 1
+            glMatrix.mat4.translate(object10.child[0].MOVEMATRIX, object10.child[0].MOVEMATRIX, [-0.7, -0.3, 0.6]);
+            glMatrix.mat4.translate(object10.child[0].MOVEMATRIX, object1.child[0].MOVEMATRIX, [-8, 0.0, 0.0]);
+            //jari kiri 2
+            glMatrix.mat4.translate(object10.child[1].MOVEMATRIX, object10.child[1].MOVEMATRIX, [-0.8, -0.4, 0.6]);
+            glMatrix.mat4.translate(object10.child[1].MOVEMATRIX, object1.child[1].MOVEMATRIX, [-8, 0.0, 0.0]);
+            //jari kiri 3
+            glMatrix.mat4.translate(object10.child[2].MOVEMATRIX, object10.child[2].MOVEMATRIX, [-0.7, -0.5, 0.6]);
+            glMatrix.mat4.translate(object10.child[2].MOVEMATRIX, object10.child[2].MOVEMATRIX, [-8.0, 0.0, 0.0]);
+            // //tangan kanan atas
+            // object14.MOVEMATRIX = glMatrix.mat4.create();
+            // glMatrix.mat4.rotateY(object10.MOVEMATRIX, object10.MOVEMATRIX, THETA);
+            // glMatrix.mat4.rotateX(object10.MOVEMATRIX, object10.MOVEMATRIX, PHI);
+            // glMatrix.mat4.translate(object10.MOVEMATRIX,object10.MOVEMATRIX, [0.6,-0.4,0.5]);
+
+            //tangan kanan bawah
+            glMatrix.mat4.translate(object14.child[3].MOVEMATRIX, object14.child[3].MOVEMATRIX, [-8.6,-0.4,0.5]);
+            
+            //jari kanan 1
+            glMatrix.mat4.translate(object14.child[0].MOVEMATRIX, object14.child[0].MOVEMATRIX, [-8.7, -0.3, 0.6]);
+            
+            //jari kanan 2
+            glMatrix.mat4.translate(object14.child[1].MOVEMATRIX, object14.child[1].MOVEMATRIX, [-8.8, -0.4, 0.6]);
+            
+            //jari kanan 3
+            glMatrix.mat4.translate(object14.child[2].MOVEMATRIX, object14.child[2].MOVEMATRIX, [-8.7, -0.5, 0.6]);
+
             time_prev = time;
         }
 
@@ -1513,6 +1716,12 @@ var triangle3_elements = [
         object1a.draw(mulutSemua);
         object1b.setUniform4(PROJMATRIX,VIEWMATRIX);
         object1b.draw(scar);
+        object1.setUniform4(PROJMATRIX, VIEWMATRIX);
+        object10.setUniform4(PROJMATRIX, VIEWMATRIX);
+        object14.setUniform4(PROJMATRIX, VIEWMATRIX);
+        object1.draw(scar);
+        object10.draw(scar);
+        object14.draw(scar);
         tanah.setUniform4(PROJMATRIX,VIEWMATRIX);
         tanah.draw(mulutSemua);
         bulanKembangKempis.setUniform4(PROJMATRIX,VIEWMATRIX);
